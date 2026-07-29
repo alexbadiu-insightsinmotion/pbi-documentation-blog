@@ -11,11 +11,13 @@ const { lang = 'en', altHref } = Astro.props;
 const dict = t(lang);
 const prefix = lang === 'fr' ? '/fr' : '';
 
+// Deneb, Search, and Contact are English-only — never locale-prefixed,
+// even when rendered from the French header.
 const nav = [
   { href: `${prefix}/`, label: dict.nav.home },
   { href: '/deneb/', label: dict.nav.deneb },
   { href: '/search/', label: dict.nav.search },
-  { href: `${prefix}/contact/`, label: dict.nav.contact },
+  { href: '/contact/', label: dict.nav.contact },
 ];
 
 const switchHref = altHref ?? (lang === 'en' ? '/fr/' : '/');
