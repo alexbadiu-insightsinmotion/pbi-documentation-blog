@@ -1,5 +1,4 @@
-// Central site copy/config. Fill in the empty social links whenever you have them —
-// Footer.astro only renders the ones that are set.
+// Central site copy/config.
 export const site = {
   title: 'PBI Documentation',
   wordmark: { main: 'PBI', accent: 'Documentation' },
@@ -10,12 +9,16 @@ export const site = {
     'Des articles pratiques sur la documentation des projets Power BI — documents de conception, annotations PBIR, translytical task flows, et les outils qui vont avec.',
   author: 'Alexandru Badiu',
   githubRepo: 'https://github.com/alexbadiu-insightsinmotion/PBI-Documentation',
-  bookingUrl: 'https://bookings.cloud.microsoft/book/PugliaBIConsulting@pugliabi.com/?ismsaljsauthenabled=true',
+  // "Subscribe" links here — see scripts/announce-new-posts.mjs, which opens
+  // a Discussion in the Announcements category for every new post.
+  discussionsUrl: 'https://github.com/alexbadiu-insightsinmotion/pbi-documentation-blog/discussions/categories/announcements',
+  linkedin: 'https://www.linkedin.com/in/alexandru-badiu/',
+  coAuthor: {
+    name: 'Greg Philps',
+    linkedin: 'https://www.linkedin.com/in/gregphilps/',
+  },
   social: {
-    linkedin: '',
     x: '',
     youtube: '',
   },
-  // Set once you have a Buttondown username — activates the Subscribe form (Wave 4).
-  buttondownUsername: '',
 };

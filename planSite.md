@@ -174,3 +174,40 @@ silently expanding scope.
 - [x] Wave 4 — Subscribe
 - [x] Wave 5 — Deneb gallery section
 - [x] Wave 6 — Bilingual EN/FR
+- [x] Wave 7 — Post-launch corrections (below)
+
+## Wave 7 — Post-launch corrections
+
+Feedback after the live site went up:
+
+- **Code blocks were unreadable**: Shiki wraps a whole fenced code block in
+  one multi-line `<code>`, and the earlier inline-code chip styling
+  (background/border/padding on `code`) rendered each visual line as its own
+  floating box, since `code` is `display: inline`. Reset that styling for
+  code inside `<pre>` and gave the block itself proper card treatment.
+- **Search cards were badly laid out**: they'd been given a title on top of
+  the homepage's tag+author+read-more row layout, which only has room for
+  that row — long titles collided with everything else. Dropped the title
+  to match the homepage cards.
+- **Broken/missing thumbnails**: `extractCover` only matched HTML `<img>`
+  tags, missing two posts that use markdown `![]()` images — fixed. Four
+  posts (Deployment, Model, Validation, Summary) have GitHub
+  `user-attachments` image URLs that are dead upstream in PBI-Documentation
+  itself — not fixable from the site; added an `onerror` fallback so a
+  broken cover just hides instead of showing a blank box.
+- **Booking CTA removed**: it pointed at someone else's Microsoft Bookings
+  page. Rather than fabricate a replacement, the "Book a session" card was
+  dropped from Contact entirely.
+- **About page removed**: redundant per user request.
+- **Contact rebuilt** around two explicit LinkedIn buttons (Alex + Greg,
+  `site.linkedin` / `site.coAuthor.linkedin`) instead of a generic social loop.
+- **Subscribe rebuilt from scratch**: the Buttondown-shaped email form was
+  real UI but a non-functional "coming soon" placeholder is bad UX on a live
+  public page, and there's no way to make automated email work without an
+  account existing *somewhere* — no code-only path around that. Replaced
+  with a zero-account mechanism: Subscribe links to this repo's GitHub
+  Discussions "Announcements" category; `scripts/announce-new-posts.mjs`
+  (wired into the deploy workflow after `npm run sync`) opens a Discussion
+  for any post not yet in `announced-posts.json`, so GitHub itself emails
+  anyone watching. `rss.xml.js` was removed since it existed only to feed
+  Buttondown's RSS-to-email import.

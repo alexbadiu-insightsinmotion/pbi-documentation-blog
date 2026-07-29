@@ -10,7 +10,8 @@ on:
     - cron: '0 6 * * *'
 
 permissions:
-  contents: read
+  contents: write
+  discussions: write
   pages: write
   id-token: write
 
@@ -38,6 +39,21 @@ jobs:
         run: npm run sync
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Announce new posts as GitHub Discussions
+        run: node scripts/announce-new-posts.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit updated announced-posts.json (if changed)
+        run: |
+          if ! git diff --quiet -- announced-posts.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add announced-posts.json
+            git commit -m "Record newly announced posts [skip ci]"
+            git push
+          fi
 
       - name: Build
         run: npx astro build

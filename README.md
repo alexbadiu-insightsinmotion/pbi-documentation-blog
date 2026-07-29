@@ -59,8 +59,8 @@ plus an `enSlug` field pointing back at the English slug, and write it to
 `content/translations/fr/<slug>.md`.
 
 Search, Contact, Subscribe, and the Deneb gallery (`/deneb/`) are English-only —
-only the blog posts, home page, about page, and site chrome (nav/footer/hero) are
-bilingual for now.
+only the blog posts, home page, and site chrome (nav/footer/hero) are bilingual
+for now.
 
 ## Commands
 
@@ -81,16 +81,25 @@ the repo settings once this is pushed.
 
 ## Site config
 
-`src/site.config.ts` holds the title, tagline, description (EN + FR), social links,
-the Bookings.cloud.microsoft URL used on `/contact/`, and `buttondownUsername` (empty
-until you have a Buttondown account — see Subscribe below). The social links start
-empty; `Footer.astro` only renders the ones that are set.
+`src/site.config.ts` holds the title, tagline, description (EN + FR), `linkedin`
+(your profile, used on Contact/footer), `coAuthor` (Greg's name + LinkedIn, used
+on Contact), and `discussionsUrl` (the Subscribe destination — see below). The
+`social` block (X/YouTube) starts empty; `Footer.astro` only renders the ones
+that are set.
 
-## Subscribe
+## Subscribe (GitHub Discussions, not an email service)
 
-The Subscribe form (footer + homepage) is a real Buttondown embed-subscribe form —
-double opt-in email, then an email whenever a new post is published — but it's
-inactive until `site.config.ts`'s `buttondownUsername` is set (no account was
-created as part of building this). `rss.xml.js` still exists as a feed (not linked
-in nav — there's no user-facing "RSS" anywhere) purely so Buttondown's own
-"RSS → email" import can point at it once you're ready to activate Subscribe.
+There's no newsletter service wired up, and no account was created as part of
+building this. Instead, `Subscribe.astro` links to this repo's **Announcements**
+Discussions category. Whoever clicks "Watch" there gets a real email straight
+from GitHub — no third-party service, no API key.
+
+The other half is `scripts/announce-new-posts.mjs`, which runs as part of the
+deploy workflow right after `npm run sync`: it compares the freshly-synced posts
+in `src/content/blog/` against `announced-posts.json` (the list of slugs already
+announced) and opens a new GitHub Discussion for anything not yet in that list,
+titled after the post with a link back to it. It then commits the updated
+`announced-posts.json` back to `main` (with `[skip ci]` so that commit doesn't
+re-trigger the workflow). The 26 posts that existed when this was built are
+pre-seeded into `announced-posts.json` so they don't all fire discussions at
+once — only genuinely new posts going forward will.

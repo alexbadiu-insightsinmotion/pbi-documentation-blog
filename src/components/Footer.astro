@@ -12,21 +12,22 @@ const dict = t(lang);
 const prefix = lang === 'fr' ? '/fr' : '';
 
 const year = new Date().getFullYear();
-const socialLinks = Object.entries(site.social).filter(([, url]) => url);
+const socialLabels: Record<string, string> = { x: 'X', youtube: 'YouTube' };
+const extraSocialLinks = Object.entries(site.social).filter(([, url]) => url);
 ---
 
 <footer class="footer">
   <div class="col">
     <h3>{dict.footer.contact}</h3>
-    {socialLinks.length === 0 && <p class="muted">{dict.footer.addLinks}</p>}
-    {socialLinks.map(([label, url]) => (
-      <a href={url} target="_blank" rel="noopener noreferrer">{label}</a>
+    <a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    {extraSocialLinks.map(([key, url]) => (
+      <a href={url} target="_blank" rel="noopener noreferrer">{socialLabels[key] ?? key}</a>
     ))}
   </div>
   <div class="col">
     <h3>{dict.footer.site}</h3>
     <a href={withBase(`${prefix}/`)}>{dict.nav.home}</a>
-    <a href={withBase(`${prefix}/about/`)}>{dict.nav.about}</a>
+    <a href={withBase('/deneb/')}>{dict.nav.deneb}</a>
     <a href={withBase(`${prefix}/contact/`)}>{dict.nav.contact}</a>
   </div>
   <div class="col about">
