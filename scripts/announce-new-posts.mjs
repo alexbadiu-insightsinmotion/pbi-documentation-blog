@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const OWNER = 'alexbadiu-insightsinmotion';
 const REPO = 'pbi-documentation-blog';
-const SITE_URL = 'https://alexbadiu-insightsinmotion.github.io/pbi-documentation-blog';
+const SITE_URL = 'https://insightsinmotion.com';
 const CATEGORY_NAME = 'Announcements';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url)) + '/..';
