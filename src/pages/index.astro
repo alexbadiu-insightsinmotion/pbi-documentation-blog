@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../site.config';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Base title={site.title}>
+  <Hero />
+  <section class="post-list">
+    <div class="grid">
+      {posts.map((post, index) => (
+        <PostCard
+          slug={post.id}
+          title={post.data.title}
+          date={post.data.date}
+          excerpt={post.data.excerpt}
+          cover={post.data.cover}
+          index={index}
+        />
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .post-list {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(48px, 8vh, 96px) clamp(24px, 5vw, 48px);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(28px, 3vw, 40px);
+  }
+</style>

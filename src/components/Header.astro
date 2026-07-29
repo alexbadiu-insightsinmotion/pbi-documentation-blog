@@ -1,0 +1,64 @@
+---
+import { site } from '../site.config';
+import { withBase } from '../lib/url';
+
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/about/', label: 'About' },
+  { href: '/rss.xml', label: 'RSS' },
+];
+---
+
+<header class="header">
+  <a href={withBase('/')} class="wordmark">
+    {site.wordmark.main} <em class="wordmark-accent">{site.wordmark.accent}</em>
+  </a>
+  <nav class="nav">
+    {nav.map((item) => (
+      <a href={withBase(item.href)}>{item.label}</a>
+    ))}
+  </nav>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 70;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px clamp(24px, 5vw, 48px);
+    background: rgba(244, 236, 221, 0.82);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .wordmark {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .wordmark-accent {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .nav {
+    display: flex;
+    gap: clamp(16px, 3vw, 32px);
+  }
+  .nav a {
+    font: 600 13px/1 var(--font-sans);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.3s var(--ease-signature);
+  }
+  .nav a:hover {
+    color: var(--gold);
+  }
+</style>

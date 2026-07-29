@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config';
+---
+
+<Base title="About">
+  <section class="about">
+    <p class="eyebrow" data-reveal>About</p>
+    <h1 data-reveal data-reveal-delay="80">{site.author}</h1>
+    <div class="prose-post" data-reveal data-reveal-delay="160">
+      <p>
+        This is the home for a series on documenting Power BI projects — design documents,
+        automated testing, PBIR annotations, translytical task flows, and the tooling that
+        makes documentation something people actually keep up to date.
+      </p>
+      <p>
+        Every post here started life in the
+        {' '}<a href={site.githubRepo} target="_blank" rel="noopener noreferrer">PBI-Documentation</a>{' '}
+        GitHub repo, which is also where cheat sheets, templates, and other supporting
+        material live alongside the articles themselves.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .about {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: clamp(56px, 10vh, 120px) clamp(24px, 5vw, 48px) clamp(64px, 10vh, 120px);
+    text-align: center;
+  }
+  .eyebrow {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 0 0 16px;
+  }
+  .about h1 {
+    font-size: clamp(32px, 4.4vw, 48px);
+    font-weight: 800;
+    margin: 0 0 32px;
+  }
+  .about .prose-post {
+    text-align: left;
+  }
+</style>
