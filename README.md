@@ -103,16 +103,20 @@ that are set.
 ## Subscribe (GitHub Discussions, not an email service)
 
 There's no newsletter service wired up, and no account was created as part of
-building this. Instead, `Subscribe.astro` links to this repo's **Announcements**
-Discussions category. To subscribe, a reader:
-1. Opens the [Announcements category](https://github.com/alexbadiu-insightsinmotion/pbi-documentation-blog/discussions/categories/announcements) (signs in to GitHub if needed).
-2. Clicks the **Watch** button near the top of the repo page.
-3. Chooses **All Activity** (or **Custom → Discussions** to only watch this).
+building this. `Subscribe.astro`'s button (`site.watchUrl`) goes straight to
+this repo's notification settings page
+(`https://github.com/.../pbi-documentation-blog/subscription`) — no hunting
+for a "Watch" button on some other page. To subscribe, a reader:
+1. Clicks the button (signs in to GitHub if needed).
+2. On the settings page that opens, chooses **All Activity** (or **Custom →
+   Discussions** to only watch this, not code activity).
 
 From then on, GitHub itself emails them the moment a new post is announced
-there — no third-party service, no API key. There's a "How to get notified
-about new posts" discussion in that category with the same steps (pin it
-from the Discussions UI if you want it to stay at the top — the GraphQL API
+via a Discussion in the **Announcements** category (`site.discussionsUrl`,
+linked as a secondary "How does this work?" line under the button) — no
+third-party service, no API key. There's a "How to get notified about new
+posts" discussion in that category explaining the same thing (pin it from
+the Discussions UI if you want it to stay at the top — the GraphQL API
 doesn't expose pinning).
 
 The other half is `scripts/announce-new-posts.mjs`, which runs as part of the

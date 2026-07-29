@@ -1,9 +1,10 @@
 ---
-// Zero-account "subscribe": links to this repo's GitHub Discussions
-// Announcements category. Watching it (native GitHub feature) makes
-// GitHub itself email you whenever scripts/announce-new-posts.mjs opens a
-// new discussion for a freshly published post — no email service, no API
-// key, no account for the site owner to create. See scripts/announce-new-posts.mjs.
+// Zero-account "subscribe": the button goes straight to this repo's GitHub
+// notification settings page (no hunting for a "Watch" button anywhere).
+// Choosing "All Activity" (or Custom → Discussions) there makes GitHub
+// itself email you whenever scripts/announce-new-posts.mjs opens a new
+// Discussion for a freshly published post — no email service, no API key,
+// no account for the site owner to create.
 import { site } from '../site.config';
 
 interface Props {
@@ -15,15 +16,14 @@ const { compact = false, showHeading = true } = Astro.props;
 
 <div class:list={['subscribe', { compact }]}>
   {showHeading && <h3>Get new posts by email</h3>}
-  <p>No newsletter service — just GitHub's own notifications, set up once:</p>
-  <ol class="steps">
-    <li>Open the Announcements page (button below) — sign in to GitHub if you're not already.</li>
-    <li>Click the <strong>Watch</strong> button near the top of the repo.</li>
-    <li>Choose <strong>All Activity</strong> (or Custom → Discussions).</li>
-  </ol>
-  <a class="cta" href={site.discussionsUrl} target="_blank" rel="noopener noreferrer">
-    Open Announcements &rarr;
+  <p>One click, on GitHub's own notifications — no newsletter, no signup form.</p>
+  <a class="cta" href={site.watchUrl} target="_blank" rel="noopener noreferrer">
+    Watch this repo &rarr;
   </a>
+  <p class="hint">
+    On the page that opens, pick <strong>All Activity</strong> (or Custom &rarr; Discussions).
+    <a href={site.discussionsUrl} target="_blank" rel="noopener noreferrer">How does this work?</a>
+  </p>
 </div>
 
 <style>
@@ -36,22 +36,7 @@ const { compact = false, showHeading = true } = Astro.props;
     color: var(--text-faint);
     font-size: 14px;
     line-height: 1.6;
-    margin: 0 0 12px;
-  }
-  .steps {
-    text-align: left;
-    color: var(--text-faint);
-    font-size: 13px;
-    line-height: 1.6;
-    margin: 0 0 20px;
-    padding-left: 1.2em;
-    display: inline-block;
-  }
-  .steps li {
-    margin: 4px 0;
-  }
-  .steps strong {
-    color: var(--text-body);
+    margin: 0 0 16px;
   }
   .cta {
     display: inline-block;
@@ -67,6 +52,17 @@ const { compact = false, showHeading = true } = Astro.props;
   .cta:hover {
     transform: translateY(-2px);
   }
+  .hint {
+    margin: 12px 0 0;
+    font-size: 12px;
+  }
+  .hint strong {
+    color: var(--text-body);
+  }
+  .hint a {
+    color: var(--gold);
+    margin-left: 6px;
+  }
 
   .subscribe.compact {
     background: var(--bg-alt);
@@ -77,8 +73,5 @@ const { compact = false, showHeading = true } = Astro.props;
     text-align: center;
     max-width: 640px;
     margin: 0 auto;
-  }
-  .subscribe.compact .steps {
-    text-align: left;
   }
 </style>
