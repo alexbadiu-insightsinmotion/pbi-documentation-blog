@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import PostCard from '../../components/PostCard.astro';
+import Subscribe from '../../components/Subscribe.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../../site.config';
+
+const posts = (await getCollection('blogFr')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Base title={site.title} description={site.descriptionFr} lang="fr" altHref="/">
+  <Hero lang="fr" />
+  <section class="post-list">
+    <div class="grid">
+      {posts.map((post, index) => (
+        <PostCard
+          slug={post.id}
+          tag={post.data.tag}
+          author={post.data.author}
+          cover={post.data.cover}
+          index={index}
+          lang="fr"
+        />
+      ))}
+    </div>
+  </section>
+  <section class="subscribe-section" data-reveal>
+    <Subscribe compact />
+  </section>
+</Base>
+
+<style>
+  .post-list {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(48px, 8vh, 96px) clamp(24px, 5vw, 48px);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(28px, 3vw, 40px);
+  }
+  .subscribe-section {
+    padding: 0 clamp(24px, 5vw, 48px) clamp(64px, 10vh, 120px);
+  }
+</style>

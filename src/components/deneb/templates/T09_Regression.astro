@@ -1,0 +1,66 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+
+const SCATTER = [
+  [80, 62], [155, 98], [200, 145], [260, 168], [90, 82], [310, 205], [140, 115], [230, 152],
+  [175, 128], [290, 190], [60, 55], [330, 220], [120, 102], [248, 160], [195, 140], [270, 180],
+];
+---
+
+<TemplateSection
+  number="09 — Regression"
+  description="Scatter points paired with an ordinary-least-squares regression line and R² annotation. The relationship between variables made legible, without a pivot table."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/209%20-%20Regression%20(Deneb%20Template).md"
+  bg="var(--bg)"
+  chartFirst
+>
+  <Fragment slot="title">The <span class="accent">trend line</span></Fragment>
+  <div class="chart-card" data-anim-root data-stagger="60">
+    <div class="chart-label">Spend vs Revenue &middot; R² = 0.86</div>
+    <svg viewBox="0 0 440 300" class="reg-svg">
+      <line x1="50" y1="10" x2="50" y2="260" stroke="rgba(43,33,24,0.14)" stroke-width="1" />
+      <line x1="50" y1="260" x2="420" y2="260" stroke="rgba(43,33,24,0.14)" stroke-width="1" />
+      {[260, 195, 130, 65].map((y, i) => (
+        <g>
+          <line x1="46" y1={y} x2="420" y2={y} stroke="rgba(43,33,24,0.05)" stroke-width="0.8" />
+          <text x="38" y={y + 4} text-anchor="end" font-size="10" fill="#8A7C68">{i * 75}</text>
+        </g>
+      ))}
+      {[50, 143, 236, 329, 422].map((x, i) => (
+        <text x={x} y="276" text-anchor="middle" font-size="10" fill="#8A7C68">{i * 90}</text>
+      ))}
+
+      <path d="M 65,240 L 390,52 L 400,62 L 75,250 Z" fill="rgba(184,134,11,0.1)" />
+      <line x1="65" y1="244" x2="395" y2="58" stroke="#B8860B" stroke-width="2.5" stroke-linecap="round" data-anim="trace" data-dur="900" />
+      {SCATTER.map(([sx, sy]) => {
+        const cx = 50 + (sx / 380) * 360;
+        const cy = 260 - (sy / 230) * 230;
+        return <circle cx={cx} cy={cy} r="5.5" fill="#C9A227" fill-opacity="0.8" stroke="rgba(255,255,255,0.5)" stroke-width="1" data-anim="pop" />;
+      })}
+      <rect x="310" y="22" width="100" height="28" rx="5" fill="rgba(43,33,24,0.06)" />
+      <text x="360" y="40" text-anchor="middle" font-size="12" fill="#2B2118" font-weight="700">R² = 0.86</text>
+    </svg>
+  </div>
+</TemplateSection>
+
+<style>
+  .chart-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(22px, 3vw, 34px);
+    box-shadow: var(--card-shadow);
+  }
+  .chart-label {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 18px;
+  }
+  .reg-svg {
+    width: 100%;
+    height: auto;
+    font-family: 'Inter', sans-serif;
+  }
+</style>

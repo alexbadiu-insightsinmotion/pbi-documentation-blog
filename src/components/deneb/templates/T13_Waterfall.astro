@@ -1,0 +1,20 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+import ImageChartCard from '../ImageChartCard.astro';
+---
+
+<TemplateSection
+  number="13 — Waterfall"
+  description="Suspended floating bars reveal how each category contributes positively or negatively to a running total — the go-to for budget-to-actual and income statement breakdowns."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/213%20-%20Waterfall%20Chart%20with%20Period%20Variance%20(Deneb%20Template).md"
+  bg="var(--bg)"
+>
+  <Fragment slot="title">Building to a <span class="accent">total</span></Fragment>
+  <ImageChartCard
+    label="Contribution to net result"
+    src="/assets/templates/tmpl-waterfall.png"
+    alt="Waterfall chart Deneb template"
+    cardBg="var(--bg-alt)"
+    stagger={14}
+  />
+</TemplateSection>

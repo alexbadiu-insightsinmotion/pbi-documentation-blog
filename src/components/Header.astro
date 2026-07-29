@@ -1,22 +1,36 @@
 ---
 import { site } from '../site.config';
 import { withBase } from '../lib/url';
+import { t, type Lang } from '../i18n/dictionary';
+
+interface Props {
+  lang?: Lang;
+  altHref?: string;
+}
+const { lang = 'en', altHref } = Astro.props;
+const dict = t(lang);
+const prefix = lang === 'fr' ? '/fr' : '';
 
 const nav = [
-  { href: '/', label: 'Home' },
-  { href: '/about/', label: 'About' },
-  { href: '/rss.xml', label: 'RSS' },
+  { href: `${prefix}/`, label: dict.nav.home },
+  { href: `${prefix}/about/`, label: dict.nav.about },
+  { href: '/deneb/', label: dict.nav.deneb },
+  { href: '/search/', label: dict.nav.search },
+  { href: `${prefix}/contact/`, label: dict.nav.contact },
 ];
+
+const switchHref = altHref ?? (lang === 'en' ? '/fr/' : '/');
 ---
 
 <header class="header">
-  <a href={withBase('/')} class="wordmark">
+  <a href={withBase(`${prefix}/`)} class="wordmark">
     {site.wordmark.main} <em class="wordmark-accent">{site.wordmark.accent}</em>
   </a>
   <nav class="nav">
     {nav.map((item) => (
       <a href={withBase(item.href)}>{item.label}</a>
     ))}
+    <a href={withBase(switchHref)} class="lang-switch">{dict.langSwitch}</a>
   </nav>
 </header>
 
@@ -48,6 +62,7 @@ const nav = [
   }
   .nav {
     display: flex;
+    align-items: center;
     gap: clamp(16px, 3vw, 32px);
   }
   .nav a {
@@ -60,5 +75,11 @@ const nav = [
   }
   .nav a:hover {
     color: var(--gold);
+  }
+  .lang-switch {
+    padding: 5px 11px;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    color: var(--amber) !important;
   }
 </style>

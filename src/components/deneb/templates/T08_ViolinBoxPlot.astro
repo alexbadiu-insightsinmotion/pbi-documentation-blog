@@ -1,0 +1,60 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+---
+
+<TemplateSection
+  number="08 — Violin + box plot"
+  description="The violin traces the density of every observation; the inner box plot anchors median, quartiles, and whiskers. Skew, spread, and outliers surface without a single aggregation."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/208%20-%20Violin%20Plot%20with%20Box%20Plot%20(Deneb%20Template).md"
+  bg="var(--bg-alt)"
+>
+  <Fragment slot="title">Distribution <span class="accent">in shape</span></Fragment>
+  <div class="chart-card" data-anim-root data-stagger="100">
+    <div class="chart-label">Score distributions</div>
+    <svg viewBox="0 0 600 340" class="violin-svg">
+      <line x1="40" y1="30" x2="40" y2="300" stroke="rgba(43,33,24,0.12)" stroke-width="1" />
+      {[30, 90, 150, 210, 270].map((y, i) => (
+        <g>
+          <line x1="36" y1={y} x2="560" y2={y} stroke="rgba(43,33,24,0.06)" stroke-width="0.8" />
+          <text x="28" y={y + 4} text-anchor="end" font-size="11" fill="#8A7C68">{100 - i * 20}</text>
+        </g>
+      ))}
+
+      <path d="M 150,50 C 170,60 185,100 185,160 C 185,220 170,265 150,280 C 130,265 115,220 115,160 C 115,100 130,60 150,50 Z" fill="rgba(184,134,11,0.16)" stroke="#B8860B" stroke-width="1.5" />
+      <rect x="138" y="120" width="24" height="90" rx="2" fill="rgba(184,134,11,0.3)" stroke="#B8860B" stroke-width="1.5" data-anim="grow-y" data-origin="center 165px" />
+      <line x1="138" y1="165" x2="162" y2="165" stroke="#B8860B" stroke-width="2.5" />
+      <line x1="150" y1="50" x2="150" y2="120" stroke="#B8860B" stroke-width="1" stroke-dasharray="3 2" />
+      <line x1="150" y1="210" x2="150" y2="280" stroke="#B8860B" stroke-width="1" stroke-dasharray="3 2" />
+      <text x="150" y="308" text-anchor="middle" font-size="13" fill="#41382C" font-weight="600">Team A</text>
+
+      <path d="M 410,80 C 440,90 455,115 455,160 C 455,210 440,255 410,268 C 380,255 365,210 365,160 C 365,115 380,90 410,80 Z" fill="rgba(166,123,69,0.16)" stroke="#A67B45" stroke-width="1.5" />
+      <rect x="397" y="130" width="26" height="75" rx="2" fill="rgba(166,123,69,0.3)" stroke="#A67B45" stroke-width="1.5" data-anim="grow-y" data-origin="center 167px" />
+      <line x1="397" y1="168" x2="423" y2="168" stroke="#A67B45" stroke-width="2.5" />
+      <line x1="410" y1="80" x2="410" y2="130" stroke="#A67B45" stroke-width="1" stroke-dasharray="3 2" />
+      <line x1="410" y1="205" x2="410" y2="268" stroke="#A67B45" stroke-width="1" stroke-dasharray="3 2" />
+      <text x="410" y="308" text-anchor="middle" font-size="13" fill="#41382C" font-weight="600">Team B</text>
+    </svg>
+  </div>
+</TemplateSection>
+
+<style>
+  .chart-card {
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(22px, 3vw, 34px);
+    box-shadow: var(--card-shadow);
+  }
+  .chart-label {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 18px;
+  }
+  .violin-svg {
+    width: 100%;
+    height: auto;
+    font-family: 'Inter', sans-serif;
+  }
+</style>

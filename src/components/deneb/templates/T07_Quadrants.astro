@@ -1,0 +1,110 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+
+const QUADS = [
+  { key: 'Q1', label: 'Stars' },
+  { key: 'Q2', label: 'Question Marks' },
+  { key: 'Q3', label: 'Dogs' },
+  { key: 'Q4', label: 'Cash Cows' },
+];
+
+const POINTS = [
+  { x: 62, y: 38, r: 8, q: 'Q1', label: 'Meridian' },
+  { x: 78, y: 52, r: 6, q: 'Q1', label: 'Aurum Co.' },
+  { x: 68, y: 71, r: 7, q: 'Q1', label: 'Soleil' },
+  { x: 45, y: 28, r: 5, q: 'Q2', label: 'Calder & Vey' },
+  { x: 31, y: 44, r: 9, q: 'Q2', label: 'Vance Group' },
+  { x: 18, y: 62, r: 5, q: 'Q2', label: 'Orsino' },
+  { x: 22, y: 72, r: 6, q: 'Q3', label: 'Thorne' },
+  { x: 38, y: 82, r: 7, q: 'Q3', label: 'Bellwether' },
+  { x: 15, y: 85, r: 5, q: 'Q3', label: 'Latham' },
+  { x: 72, y: 80, r: 8, q: 'Q4', label: 'Strata Co.' },
+  { x: 82, y: 71, r: 6, q: 'Q4', label: 'Zenith' },
+  { x: 58, y: 88, r: 5, q: 'Q4', label: 'Oaks Ltd' },
+];
+
+const QUAD_COLOR: Record<string, string> = { Q1: '#C9A227', Q2: '#B8860B', Q3: '#A67B45', Q4: '#D4A843' };
+---
+
+<TemplateSection
+  number="07 — Quadrant chart"
+  description="Classic BCG-style scatter, filtered by quadrant — each button sharpens focus so every point in a segment is visible without visual noise from the others."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/207%20-%20Performance%20Quadrants%20(Deneb%20Template).md"
+  bg="var(--bg)"
+  chartFirst
+>
+  <Fragment slot="title">Four <span class="accent">quadrants</span></Fragment>
+  <div class="chart-card" data-quadrants>
+    <div class="buttons">
+      {QUADS.map((q) => (
+        <button type="button" class="quad-btn" data-quad-button data-quad={q.key}>{q.key} &mdash; {q.label}</button>
+      ))}
+    </div>
+    <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" class="quad-svg">
+      <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(43,33,24,0.12)" stroke-width="0.5" />
+      <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(43,33,24,0.12)" stroke-width="0.5" />
+      <rect x="50" y="0" width="50" height="50" fill="rgba(201,162,39,0.06)" />
+      <rect x="0" y="0" width="50" height="50" fill="rgba(166,123,69,0.06)" />
+      <rect x="0" y="50" width="50" height="50" fill="rgba(43,33,24,0.04)" />
+      <rect x="50" y="50" width="50" height="50" fill="rgba(184,134,11,0.06)" />
+      <text x="74" y="6" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">Stars ★</text>
+      <text x="4" y="6" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">Question Marks ?</text>
+      <text x="4" y="97" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">Dogs</text>
+      <text x="70" y="97" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">Cash Cows $</text>
+      {POINTS.map((p) => (
+        <circle
+          class="dot"
+          data-quad={p.q}
+          cx={p.x}
+          cy={p.y}
+          r={p.r * 0.42}
+          fill={QUAD_COLOR[p.q]}
+          stroke="rgba(255,255,255,0.4)"
+          stroke-width="0.3"
+        />
+      ))}
+    </svg>
+  </div>
+</TemplateSection>
+
+<script>
+  import { initQuadrants } from '../../../scripts/quadrants';
+  initQuadrants();
+</script>
+
+<style>
+  .chart-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(22px, 3vw, 34px);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .quad-btn {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.06em;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--card-border);
+    background: transparent;
+    color: var(--text-body);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .quad-svg {
+    width: 100%;
+    height: auto;
+    max-height: 380px;
+  }
+  .dot {
+    transition: fill 0.25s, opacity 0.25s;
+  }
+</style>

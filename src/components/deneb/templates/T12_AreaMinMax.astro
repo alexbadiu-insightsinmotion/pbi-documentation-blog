@@ -1,0 +1,20 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+import ImageChartCard from '../ImageChartCard.astro';
+---
+
+<TemplateSection
+  number="12 — Area min/max"
+  description="A shaded band stretches between daily minimum and maximum values, with the mean line cutting through the middle — seasonality, volatility, and trend in a single area chart."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/212%20-%20Area%20Chart%20with%20Min-Max%20Variance%20(Deneb%20Template).md"
+  bg="var(--bg-alt)"
+  chartFirst
+>
+  <Fragment slot="title">The <span class="accent">range</span> in full</Fragment>
+  <ImageChartCard
+    label="Daily range · min / avg / max"
+    src="/assets/templates/tmpl-minmax.png"
+    alt="Area min/max Deneb template"
+    stagger={14}
+  />
+</TemplateSection>

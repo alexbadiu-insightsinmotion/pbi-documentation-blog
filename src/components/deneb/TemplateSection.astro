@@ -1,0 +1,92 @@
+---
+interface Props {
+  number: string;
+  description: string;
+  githubHref: string;
+  bg: string;
+  chartFirst?: boolean;
+}
+const { number, description, githubHref, bg, chartFirst = false } = Astro.props;
+---
+
+<section class="template-section" style={{ background: bg }}>
+  <div class="grid">
+    <div class="text" style={chartFirst ? { order: 1 } : {}}>
+      <p class="eyebrow" data-reveal>{number}</p>
+      <h2 data-reveal data-reveal-delay="80"><slot name="title" /></h2>
+      <p class="desc" data-reveal data-reveal-delay="160">{description}</p>
+      <div data-reveal data-reveal-delay="240">
+        <a class="view-link" href={githubHref} target="_blank" rel="noopener">
+          View template <span class="arrow">&#8599;</span>
+        </a>
+      </div>
+    </div>
+    <div class="chart" style={chartFirst ? { order: 0 } : {}}>
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .template-section {
+    position: relative;
+    padding: clamp(90px, 14vh, 160px) clamp(24px, 5vw, 48px);
+  }
+  .grid {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: clamp(40px, 5vw, 80px);
+    align-items: center;
+  }
+  .eyebrow {
+    font: 600 13px/1 var(--font-sans);
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 0 0 22px;
+  }
+  .text h2 {
+    margin: 0 0 24px;
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: clamp(32px, 4.6vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--text);
+  }
+  .text h2 :global(em),
+  .text h2 :global(span.accent) {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .desc {
+    margin: 0;
+    max-width: 460px;
+    font-size: clamp(16px, 1.4vw, 19px);
+    line-height: 1.72;
+    color: var(--text-muted);
+  }
+  .desc :global(em) {
+    font-style: normal;
+    color: var(--gold);
+  }
+  .view-link {
+    margin-top: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.45);
+    padding-bottom: 7px;
+  }
+  .view-link .arrow {
+    font-size: 15px;
+    font-weight: 400;
+  }
+</style>

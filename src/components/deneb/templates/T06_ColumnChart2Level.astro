@@ -1,0 +1,72 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+---
+
+<TemplateSection
+  number="06 — 2-level column"
+  description="Category columns with clustered sub-category columns overlaid in front, each carrying its own data label — the whole and its parts on one axis."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/206%20-%202-Level%20Column%20Chart%20(Deneb%20Template).md"
+  bg="var(--bg-alt)"
+>
+  <Fragment slot="title">Two levels, <span class="accent">one column</span></Fragment>
+  <div class="chart-card" data-anim-root data-stagger="90">
+    <div class="chart-label">Revenue by region &amp; line</div>
+    <svg viewBox="0 0 600 320" class="col-svg">
+      <line x1="40" y1="270" x2="560" y2="270" stroke="rgba(43,33,24,0.14)" stroke-width="1" />
+
+      <rect x="62" y="90" width="96" height="180" rx="3" fill="rgba(166,123,69,0.22)" data-anim="grow-y" data-origin="center bottom" />
+      <rect x="74" y="152" width="32" height="118" rx="2" fill="#B8860B" data-anim="grow-y" data-origin="center bottom" />
+      <rect x="112" y="186" width="32" height="84" rx="2" fill="#C9A227" data-anim="grow-y" data-origin="center bottom" />
+      <text x="110" y="80" text-anchor="middle" fill="#2B2118" font-size="14" font-weight="700">100</text>
+      <text x="90" y="146" text-anchor="middle" fill="#6B5D4B" font-size="11" font-weight="600">62</text>
+      <text x="128" y="180" text-anchor="middle" fill="#6B5D4B" font-size="11" font-weight="600">44</text>
+      <text x="110" y="290" text-anchor="middle" fill="#8A7C68" font-size="12">North</text>
+
+      <rect x="202" y="115" width="96" height="155" rx="3" fill="rgba(166,123,69,0.22)" data-anim="grow-y" data-origin="center bottom" />
+      <rect x="214" y="175" width="32" height="95" rx="2" fill="#B8860B" data-anim="grow-y" data-origin="center bottom" />
+      <rect x="252" y="194" width="32" height="76" rx="2" fill="#C9A227" data-anim="grow-y" data-origin="center bottom" />
+      <text x="250" y="105" text-anchor="middle" fill="#2B2118" font-size="14" font-weight="700">86</text>
+      <text x="230" y="169" text-anchor="middle" fill="#6B5D4B" font-size="11" font-weight="600">50</text>
+      <text x="268" y="188" text-anchor="middle" fill="#6B5D4B" font-size="11" font-weight="600">40</text>
+      <text x="250" y="290" text-anchor="middle" fill="#8A7C68" font-size="12">South</text>
+
+      <rect x="342" y="142" width="96" height="128" rx="3" fill="rgba(166,123,69,0.22)" data-anim="grow-y" data-origin="center bottom" />
+      <rect x="354" y="198" width="32" height="72" rx="2" fill="#B8860B" data-anim="grow-y" data-origin="center bottom" />
+      <rect x="392" y="202" width="32" height="68" rx="2" fill="#C9A227" data-anim="grow-y" data-origin="center bottom" />
+      <text x="390" y="132" text-anchor="middle" fill="#2B2118" font-size="14" font-weight="700">72</text>
+      <text x="370" y="192" text-anchor="middle" fill="#6B5D4B" font-size="11" font-weight="600">38</text>
+      <text x="408" y="196" text-anchor="middle" fill="#6B5D4B" font-size="11" font-weight="600">36</text>
+      <text x="390" y="290" text-anchor="middle" fill="#8A7C68" font-size="12">East</text>
+
+      <rect x="482" y="166" width="96" height="104" rx="3" fill="rgba(166,123,69,0.22)" data-anim="grow-y" data-origin="center bottom" />
+      <rect x="494" y="214" width="32" height="56" rx="2" fill="#B8860B" data-anim="grow-y" data-origin="center bottom" />
+      <rect x="532" y="214" width="32" height="56" rx="2" fill="#C9A227" data-anim="grow-y" data-origin="center bottom" />
+      <text x="530" y="156" text-anchor="middle" fill="#2B2118" font-size="14" font-weight="700">58</text>
+      <text x="510" y="208" text-anchor="middle" fill="#6B5D4B" font-size="11" font-weight="600">30</text>
+      <text x="548" y="208" text-anchor="middle" fill="#6B5D4B" font-size="11" font-weight="600">28</text>
+      <text x="530" y="290" text-anchor="middle" fill="#8A7C68" font-size="12">West</text>
+    </svg>
+  </div>
+</TemplateSection>
+
+<style>
+  .chart-card {
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(22px, 3vw, 34px);
+    box-shadow: var(--card-shadow);
+  }
+  .chart-label {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 18px;
+  }
+  .col-svg {
+    width: 100%;
+    height: auto;
+    font-family: 'Inter', sans-serif;
+  }
+</style>

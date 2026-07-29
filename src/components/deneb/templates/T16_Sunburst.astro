@@ -1,0 +1,20 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+import ImageChartCard from '../ImageChartCard.astro';
+---
+
+<TemplateSection
+  number="16 — Sunburst"
+  description="Two levels of category hierarchy radiate outward from a central total — parent segments in the inner ring, children in the outer. Proportion and hierarchy together, without nesting."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/216%20-%20Dynamic%20Sunburst%20Chart%20(Deneb%20Template).md"
+  bg="var(--bg-alt)"
+  chartFirst
+>
+  <Fragment slot="title">Hierarchy in <span class="accent">rings</span></Fragment>
+  <ImageChartCard
+    label="Revenue by category · two levels"
+    src="/assets/templates/tmpl-sunburst.png"
+    alt="Sunburst chart Deneb template"
+    stagger={14}
+  />
+</TemplateSection>

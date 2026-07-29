@@ -1,0 +1,220 @@
+---
+const ROWS = [
+  { label: 'Aurum Co.', value: 980 },
+  { label: 'Soleil Ltd', value: 845 },
+  { label: 'Meridian', value: 690 },
+  { label: 'Calder & Vey', value: 615 },
+  { label: 'Vance Group', value: 540 },
+  { label: 'Orsino', value: 470 },
+  { label: 'Thorne', value: 410 },
+  { label: 'Bellwether', value: 360 },
+];
+---
+
+<section class="t01">
+  <div class="grid">
+    <div class="text">
+      <p class="eyebrow" data-reveal>01 &mdash; Space-saving bar</p>
+      <h2 data-reveal data-reveal-delay="80">Top N, <span class="accent">then Others</span></h2>
+      <p class="desc" data-reveal data-reveal-delay="160">
+        Full-width bars rank your strongest categories; everything past the cut folds into a single <em>Others</em> bar. Drag the slider to choose how many stay in focus.
+      </p>
+      <div data-reveal data-reveal-delay="240">
+        <a class="view-link" href="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/tree/main/Components/Space-Saving%20Bar%20Chart%20with%20Top%20N%20and%20Others" target="_blank" rel="noopener">
+          View template <span class="arrow">&#8599;</span>
+        </a>
+      </div>
+    </div>
+    <div class="card" data-space-saving-bar>
+      <div class="card-header">
+        <span class="label">Revenue by client &middot; $K</span>
+        <div class="slider-group">
+          <span class="slider-label">Top</span>
+          <input type="range" min="3" max="8" value="6" data-topn-slider />
+          <span class="topn-value" data-topn-value>6</span>
+        </div>
+      </div>
+      {ROWS.map((r) => (
+        <div class="row" data-row data-value={r.value}>
+          <span class="row-label">{r.label}</span>
+          <div class="row-track">
+            <div class="bar" data-bar></div>
+          </div>
+          <span class="row-value">{r.value}</span>
+        </div>
+      ))}
+      <div class="row others-row" data-others-row>
+        <span class="others-label">Others</span>
+        <div class="row-track others-track">
+          <div class="bar others-bar" data-bar></div>
+        </div>
+        <span class="others-value" data-others-value>0</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initSpaceSavingBar } from '../../../scripts/spaceSavingBar';
+  initSpaceSavingBar();
+</script>
+
+<style>
+  .t01 {
+    position: relative;
+    padding: clamp(90px, 14vh, 160px) clamp(24px, 5vw, 48px);
+    background: var(--bg);
+  }
+  .grid {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: clamp(40px, 5vw, 80px);
+    align-items: center;
+  }
+  .eyebrow {
+    font: 600 13px/1 var(--font-sans);
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 0 0 22px;
+  }
+  .text h2 {
+    margin: 0 0 24px;
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: clamp(32px, 4.6vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--text);
+  }
+  .text h2 .accent {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .desc {
+    margin: 0;
+    max-width: 460px;
+    font-size: clamp(16px, 1.4vw, 19px);
+    line-height: 1.72;
+    color: var(--text-muted);
+  }
+  .desc em {
+    font-style: normal;
+    color: var(--gold);
+  }
+  .view-link {
+    margin-top: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.45);
+    padding-bottom: 7px;
+  }
+  .card {
+    background: var(--bg-alt);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(22px, 3vw, 34px);
+    box-shadow: var(--card-shadow);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .label {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .slider-label {
+    font: 500 11px/1 var(--font-sans);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-sub);
+  }
+  .slider-group input[type='range'] {
+    width: 118px;
+  }
+  .topn-value {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--text);
+    min-width: 18px;
+    text-align: center;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: clamp(74px, 9vw, 116px) 1fr clamp(42px, 5vw, 60px);
+    align-items: center;
+    gap: 14px;
+    padding: 7px 0;
+    overflow: hidden;
+    transition: opacity 0.45s ease, max-height 0.5s ease, padding 0.45s ease;
+  }
+  .row-label {
+    font: 500 14px/1.2 var(--font-sans);
+    color: var(--text-body);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .row-track {
+    height: 22px;
+    background: rgba(43, 33, 24, 0.06);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .bar {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #A67B45, #B8860B);
+    width: 0%;
+    transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .row-value {
+    font: 600 13px/1 var(--font-sans);
+    color: var(--text);
+    text-align: right;
+  }
+  .others-row {
+    margin-top: 6px;
+    border-top: 1px dashed rgba(166, 123, 69, 0.45);
+  }
+  .others-label {
+    font: 600 14px/1.2 var(--font-sans);
+    color: var(--text-sub);
+    padding-top: 7px;
+  }
+  .others-track {
+    background: rgba(43, 33, 24, 0.04);
+    margin-top: 7px;
+  }
+  .others-bar {
+    background: repeating-linear-gradient(45deg, rgba(166, 123, 69, 0.6), rgba(166, 123, 69, 0.6) 6px, rgba(166, 123, 69, 0.32) 6px, rgba(166, 123, 69, 0.32) 12px);
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .others-value {
+    font: 600 13px/1 var(--font-sans);
+    color: var(--text-sub);
+    text-align: right;
+    padding-top: 7px;
+  }
+</style>

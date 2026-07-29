@@ -1,0 +1,63 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+---
+
+<TemplateSection
+  number="05 — Linear gauges"
+  description="Each measure reads against banded performance zones, with a slim pointer marking exactly where you land — units and thresholds in a single horizontal sweep."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/205%20-%20Linear%20Gauges%20(Deneb%20Template).md"
+  bg="var(--bg)"
+  chartFirst
+>
+  <Fragment slot="title">Reading the <span class="accent">zones</span></Fragment>
+  <div class="chart-card" data-anim-root data-stagger="120">
+    <div class="chart-label">Operations · against zones</div>
+    <svg viewBox="0 0 600 300" class="gauge-svg">
+      <text x="60" y="46" fill="#41382C" font-size="15" font-weight="500">Throughput</text>
+      <text x="540" y="46" text-anchor="end" fill="#2B2118" font-size="15" font-weight="700">84 <tspan fill="#8A7C68" font-weight="500" font-size="12">u/min</tspan></text>
+      <rect x="60" y="58" width="216" height="16" rx="3" fill="rgba(166,123,69,0.16)" />
+      <rect x="276" y="58" width="144" height="16" rx="0" fill="rgba(166,123,69,0.30)" />
+      <rect x="420" y="58" width="120" height="16" rx="3" fill="rgba(166,123,69,0.46)" />
+      <rect x="60" y="61" width="403" height="10" rx="5" fill="#B8860B" data-anim="grow-x" data-origin="left center" />
+      <polygon points="463,40 470,52 456,52" fill="#2B2118" data-anim="fade" data-dur="500" />
+
+      <text x="60" y="146" fill="#41382C" font-size="15" font-weight="500">Quality</text>
+      <text x="540" y="146" text-anchor="end" fill="#2B2118" font-size="15" font-weight="700">92 <tspan fill="#8A7C68" font-weight="500" font-size="12">%</tspan></text>
+      <rect x="60" y="158" width="216" height="16" rx="3" fill="rgba(166,123,69,0.16)" />
+      <rect x="276" y="158" width="144" height="16" rx="0" fill="rgba(166,123,69,0.30)" />
+      <rect x="420" y="158" width="120" height="16" rx="3" fill="rgba(166,123,69,0.46)" />
+      <rect x="60" y="161" width="442" height="10" rx="5" fill="#B8860B" data-anim="grow-x" data-origin="left center" />
+      <polygon points="502,140 509,152 495,152" fill="#2B2118" data-anim="fade" data-dur="500" />
+
+      <text x="60" y="246" fill="#41382C" font-size="15" font-weight="500">Utilisation</text>
+      <text x="540" y="246" text-anchor="end" fill="#2B2118" font-size="15" font-weight="700">61 <tspan fill="#8A7C68" font-weight="500" font-size="12">%</tspan></text>
+      <rect x="60" y="258" width="216" height="16" rx="3" fill="rgba(166,123,69,0.16)" />
+      <rect x="276" y="258" width="144" height="16" rx="0" fill="rgba(166,123,69,0.30)" />
+      <rect x="420" y="258" width="120" height="16" rx="3" fill="rgba(166,123,69,0.46)" />
+      <rect x="60" y="261" width="293" height="10" rx="5" fill="#B8860B" data-anim="grow-x" data-origin="left center" />
+      <polygon points="353,240 360,252 346,252" fill="#2B2118" data-anim="fade" data-dur="500" />
+    </svg>
+  </div>
+</TemplateSection>
+
+<style>
+  .chart-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(22px, 3vw, 34px);
+    box-shadow: var(--card-shadow);
+  }
+  .chart-label {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 18px;
+  }
+  .gauge-svg {
+    width: 100%;
+    height: auto;
+    font-family: 'Inter', sans-serif;
+  }
+</style>

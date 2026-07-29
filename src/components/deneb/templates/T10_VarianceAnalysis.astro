@@ -1,0 +1,126 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+
+const DATA = [
+  { name: 'Product 1', act: 4.3, varM: 0.8, varP: 25.5 },
+  { name: 'Product 2', act: 4.3, varM: 0.3, varP: -12.1 },
+  { name: 'Product 3', act: 4.2, varM: 0.2, varP: 7.2 },
+  { name: 'Product 4', act: 3.9, varM: -0.3, varP: 6.2 },
+  { name: 'Product 5', act: 3.8, varM: 0.5, varP: -7.6 },
+  { name: 'Product 6', act: 4.0, varM: -1.1, varP: 16.9 },
+  { name: 'Product 7', act: 3.9, varM: 0.1, varP: -22.7 },
+  { name: 'Product 8', act: 3.8, varM: 0.3, varP: 2.8 },
+  { name: 'Product 9', act: 4.2, varM: 0.6, varP: 9.2 },
+  { name: 'Product 10', act: 4.0, varM: -0.5, varP: 14.3 },
+];
+
+const ROW_H = 28;
+const TOP = 44;
+const LX = 10;
+const CX = 360;
+const CW = 140;
+const RX = 530;
+const RW = 340;
+const L_ZERO = LX + 230;
+const L_SCALE = 60;
+const R_ZERO = RX + 120;
+const R_SCALE = 3.5;
+const TOTAL_H = TOP + DATA.length * ROW_H + 60;
+
+const LEFT_TICKS = [3.0, 3.5, 4.0, 4.5, 5.0];
+const RIGHT_TICKS = [-30, -20, -10, 0, 10, 20, 30];
+---
+
+<TemplateSection
+  number="10 — Variance analysis"
+  description="Amount variance and percent variance rendered side by side — arrows anchor to the actual value, pointing left or right to signal direction. Diverging percent bars on the right complete the picture."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/210%20-%20Variance%20Analysis%20(Deneb%20Template).md"
+  bg="var(--bg-alt)"
+>
+  <Fragment slot="title">Every <span class="accent">delta</span></Fragment>
+  <div class="chart-card" data-anim-root data-stagger="50">
+    <svg viewBox={`0 0 ${RX + RW + 10} ${TOTAL_H}`} class="var-svg">
+      <text x={LX + L_ZERO / 2 + 60} y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#41382C" letter-spacing="1">Amount Variance</text>
+      <text x={CX + CW / 2} y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#41382C" letter-spacing="1">Product</text>
+      <text x={RX + RW / 2} y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#41382C" letter-spacing="1">Percent Variance</text>
+
+      {LEFT_TICKS.map((v) => {
+        const x = L_ZERO + (v - 4.0) * L_SCALE;
+        return (
+          <g>
+            <line x1={x} y1={TOP - 12} x2={x} y2={TOP + DATA.length * ROW_H} stroke="rgba(43,33,24,0.08)" stroke-width="0.8" />
+            <text x={x} y={TOP - 16} text-anchor="middle" font-size="9" fill="#8A7C68">{v.toFixed(1)} M</text>
+            <text x={x} y={TOP + DATA.length * ROW_H + 12} text-anchor="middle" font-size="9" fill="#8A7C68">{v.toFixed(1)} M</text>
+          </g>
+        );
+      })}
+
+      {RIGHT_TICKS.map((v) => {
+        const x = R_ZERO + v * R_SCALE;
+        const label = v === 0 ? '0%' : `${v > 0 ? '+' : ''}${v}%`;
+        return (
+          <g>
+            <line x1={x} y1={TOP - 12} x2={x} y2={TOP + DATA.length * ROW_H} stroke="rgba(43,33,24,0.08)" stroke-width="0.8" />
+            <text x={x} y={TOP - 16} text-anchor="middle" font-size="9" fill="#8A7C68">{label}</text>
+            <text x={x} y={TOP + DATA.length * ROW_H + 12} text-anchor="middle" font-size="9" fill="#8A7C68">{label}</text>
+          </g>
+        );
+      })}
+
+      <line x1={L_ZERO} y1={TOP - 2} x2={L_ZERO} y2={TOP + DATA.length * ROW_H + 2} stroke="rgba(43,33,24,0.25)" stroke-width="1" />
+      <line x1={R_ZERO} y1={TOP - 2} x2={R_ZERO} y2={TOP + DATA.length * ROW_H + 2} stroke="rgba(43,33,24,0.25)" stroke-width="1" />
+
+      {DATA.map((d, i) => {
+        const y = TOP + i * ROW_H + ROW_H / 2;
+        const pos = d.varM >= 0;
+        const barPx = Math.abs(d.varM) * L_SCALE;
+        const bx = pos ? L_ZERO : L_ZERO - barPx;
+        const arrowSize = 7;
+        const tipX = pos ? L_ZERO + barPx : L_ZERO - barPx;
+        const arrow = pos
+          ? `${tipX},${y} ${tipX - arrowSize},${y - 4} ${tipX - arrowSize},${y + 4}`
+          : `${tipX},${y} ${tipX + arrowSize},${y - 4} ${tipX + arrowSize},${y + 4}`;
+        const barColor = pos ? '#C9A227' : '#2B2118';
+        const rpos = d.varP >= 0;
+        const rpx = Math.abs(d.varP) * R_SCALE;
+        const rbx = rpos ? R_ZERO : R_ZERO - rpx;
+        return (
+          <g>
+            <text x={LX + 2} y={y + 4} font-size="11" font-weight={pos ? 400 : 700} fill={barColor}>
+              {d.varM > 0 ? '+' : ''}{d.varM.toFixed(1)} M
+            </text>
+            <rect x={bx} y={y - 5} width={barPx} height="10" fill={barColor} opacity="0.85" data-anim="grow-x" />
+            <polygon points={arrow} fill={barColor} data-anim="fade" data-dur="300" />
+            <text x={CX + CW / 2} y={y + 4} text-anchor="middle" font-size="12" fill="#41382C">{d.name}</text>
+            <rect x={rbx} y={y - 5} width={rpx} height="10" fill={rpos ? '#C9A227' : '#2B2118'} opacity="0.85" data-anim="grow-x" />
+            <text x={RX + RW - 2} y={y + 4} text-anchor="end" font-size="11" font-weight={rpos ? 400 : 700} fill={rpos ? '#C9A227' : '#2B2118'}>
+              {d.varP > 0 ? '+' : ''}{d.varP.toFixed(1)}%
+            </text>
+          </g>
+        );
+      })}
+
+      <g transform={`translate(${(RX + RW + LX) / 2 - 120},${TOP + DATA.length * ROW_H + 32})`}>
+        <circle cx="0" cy="0" r="5" fill="#C9A227" />
+        <text x="10" y="4" font-size="11" fill="#41382C">Positive Variance</text>
+        <circle cx="160" cy="0" r="5" fill="#2B2118" />
+        <text x="170" y="4" font-size="11" fill="#41382C">Negative Variance</text>
+      </g>
+    </svg>
+  </div>
+</TemplateSection>
+
+<style>
+  .chart-card {
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(16px, 2.5vw, 28px);
+    box-shadow: var(--card-shadow);
+  }
+  .var-svg {
+    width: 100%;
+    height: auto;
+    font-family: 'Inter', sans-serif;
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+import { withBase } from '../../lib/url';
+
+interface Props {
+  label: string;
+  src: string;
+  alt: string;
+  stagger?: number;
+  cardBg?: string;
+}
+const { label, src, alt, stagger = 14, cardBg = 'var(--bg)' } = Astro.props;
+---
+
+<div class="chart-card" data-anim-root data-stagger={stagger} style={{ background: cardBg }}>
+  <div class="chart-label">{label}</div>
+  <img src={withBase(src)} {alt} loading="lazy" data-anim="wipe" />
+</div>
+
+<style>
+  .chart-card {
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(22px, 3vw, 34px);
+    box-shadow: var(--card-shadow);
+  }
+  .chart-label {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 18px;
+  }
+  .chart-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 9px;
+  }
+</style>

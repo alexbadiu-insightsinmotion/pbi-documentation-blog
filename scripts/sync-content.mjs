@@ -97,13 +97,31 @@ function collapseBlankLines(body) {
   return body.replace(/\n{3,}/g, '\n\n').trim();
 }
 
+function stripMarkdownLinksAndImages(text) {
+  return text
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
+}
+
+function hasRealText(block) {
+  // Rejects heading lines, bare image tags/links, and HTML-only spacer
+  // blocks (some posts have leftover "<br>\n<br>" spacers where the cover
+  // image was, or a second markdown ![...](...) image right after it).
+  const withoutMarkdownImage = block.replace(/^!\[[^\]]*\]\([^)]*\)$/, '');
+  return /[a-z0-9]/i.test(withoutMarkdownImage.replace(/<[^>]+>/g, ''));
+}
+
 function deriveExcerpt(body) {
   const firstParagraph = body
     .split(/\n{2,}/)
     .map((block) => block.trim())
-    .find((block) => block && !block.startsWith('#') && !block.startsWith('<img'));
+    .find((block) => block && !block.startsWith('#') && !block.startsWith('<img') && hasRealText(block));
   if (!firstParagraph) return '';
-  const plain = firstParagraph.replace(/[*_`#]/g, '').replace(/\s+/g, ' ').trim();
+  const plain = stripMarkdownLinksAndImages(firstParagraph)
+    .replace(/<[^>]+>/g, '')
+    .replace(/[*_`#]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
   return plain.length > 200 ? `${plain.slice(0, 197)}...` : plain;
 }
 
@@ -123,6 +141,9 @@ async function run() {
 
   for (const entry of manifest) {
     try {
+      if (!entry.tag) throw new Error('manifest entry is missing required "tag"');
+      if (!entry.author) throw new Error('manifest entry is missing required "author"');
+
       const raw = await fetchRawMarkdown(entry.file);
       const title = entry.title ?? titleFromFilename(entry.file);
       const slug = entry.slug ?? slugify(title);
@@ -137,7 +158,8 @@ async function run() {
       const frontmatter = [
         `title: ${toFrontmatterValue(title)}`,
         `date: ${date}`,
-        `tags: ${JSON.stringify(entry.tags ?? [])}`,
+        `tag: ${toFrontmatterValue(entry.tag)}`,
+        `author: ${toFrontmatterValue(entry.author)}`,
         cover ? `cover: ${toFrontmatterValue(cover)}` : null,
         excerpt ? `excerpt: ${toFrontmatterValue(excerpt)}` : null,
         `sourceFile: ${toFrontmatterValue(entry.file)}`,

@@ -1,0 +1,337 @@
+---
+const EVENTS: { indent: number; label: string; startMs: number; durMs: number; type: 'heading' | 'parent-bold' | 'parent' | 'exec-task' | 'container' | 'zero-event' }[] = [
+  { indent: 0, label: 'VISUAL CONTAINER LIFECYCLE', startMs: 0, durMs: 0, type: 'heading' },
+  { indent: 0, label: 'Resolve Parameters', startMs: 0, durMs: 3, type: 'parent' },
+  { indent: 0, label: 'Query', startMs: 3, durMs: 190, type: 'parent-bold' },
+  { indent: 1, label: 'Query Generation', startMs: 3, durMs: 0, type: 'zero-event' },
+  { indent: 1, label: 'Query Pending', startMs: 3, durMs: 0, type: 'zero-event' },
+  { indent: 1, label: 'Execute Semantic Query', startMs: 100, durMs: 30, type: 'exec-task' },
+  { indent: 2, label: 'Execute DAX Query', startMs: 100, durMs: 10, type: 'exec-task' },
+  { indent: 2, label: 'Execute Query', startMs: 110, durMs: 7, type: 'exec-task' },
+  { indent: 3, label: 'Serialize Rowset', startMs: 117, durMs: 0, type: 'zero-event' },
+  { indent: 1, label: 'Parse Query Result', startMs: 193, durMs: 14, type: 'container' },
+  { indent: 0, label: 'Render', startMs: 207, durMs: 160, type: 'parent-bold' },
+  { indent: 1, label: 'Data View Transform', startMs: 207, durMs: 0, type: 'zero-event' },
+  { indent: 1, label: 'Visual Update', startMs: 207, durMs: 0, type: 'zero-event' },
+  { indent: 1, label: 'Visual Update Async', startMs: 207, durMs: 147, type: 'container' },
+];
+
+const KPIS = [
+  { label: 'Lifecycle Duration', value: '350ms' },
+  { label: 'Model Impact', value: '6%' },
+  { label: 'DAX Impact', value: '3%' },
+  { label: 'Render Impact', value: '45%' },
+  { label: 'Wait Impact', value: '46%' },
+];
+
+const TABLE_ROWS = [
+  { cat: 'Model', count: 1, avg: 31, weight: '8.9%' },
+  { cat: 'DAX', count: 1, avg: 9, weight: '2.6%' },
+  { cat: 'Query Pending', count: 5, avg: 30, weight: '42.6%' },
+  { cat: 'Render Visual', count: 3, avg: 53, weight: '45.1%' },
+  { cat: 'Others', count: 1, avg: 3, weight: '0.9%' },
+];
+
+const G_LEFT = 162;
+const G_TOTAL_W = 860;
+const G_BAR_W = G_TOTAL_W - G_LEFT - 20;
+const TOTAL_MS = 350;
+const ms2px = (ms: number) => (ms / TOTAL_MS) * G_BAR_W;
+const ROW_H = 22;
+const G_TOP = 34;
+const G_H = G_TOP + EVENTS.length * ROW_H + 34;
+
+const TYPE_COLOR: Record<string, string> = {
+  'parent-bold': '#2B2118',
+  parent: 'rgba(43,33,24,0.55)',
+  'exec-task': '#8A7C68',
+  container: 'rgba(43,33,24,0.22)',
+};
+const TYPE_BAR_H: Record<string, number> = {
+  'parent-bold': 14,
+  parent: 10,
+  'exec-task': 10,
+  container: 10,
+};
+
+const LEGEND = [
+  { color: '#2B2118', label: 'Parent Phase', shape: 'sq' },
+  { color: '#8A7C68', label: 'Execution Task', shape: 'sq' },
+  { color: 'rgba(43,33,24,0.22)', label: 'Container Lifecycle', shape: 'sq' },
+  { color: '#8A7C68', label: '0ms Event', shape: 'di' },
+];
+---
+
+<section class="t17">
+  <div class="wrap">
+    <div class="header">
+      <p class="eyebrow" data-reveal>17 — Performance analysis</p>
+      <h2 data-reveal data-reveal-delay="60">Performance Analyzer <span class="accent">export</span></h2>
+      <p class="sub" data-reveal data-reveal-delay="100">Analysis of event duration and decomposition | Single Visual</p>
+      <p class="sub2" data-reveal data-reveal-delay="120">Sales by Date by Channel</p>
+    </div>
+
+    <div class="legend" data-reveal data-reveal-delay="140">
+      {LEGEND.map((l) => (
+        <div class="legend-item">
+          {l.shape === 'di' ? (
+            <svg width="10" height="10" class="diamond"><polygon points="5,0 10,5 5,10 0,5" fill={l.color} /></svg>
+          ) : (
+            <span class="legend-sq" style={{ background: l.color }}></span>
+          )}
+          <span>{l.label}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="gantt-card" data-reveal data-reveal-delay="160">
+      <div data-anim-root data-stagger="40">
+        <svg viewBox={`0 0 ${G_TOTAL_W} ${G_H}`} class="gantt-svg">
+          {[0, 50, 100, 150, 200, 250, 300, 350].map((ms) => {
+            const x = G_LEFT + ms2px(ms);
+            return (
+              <g>
+                <line x1={x} y1={G_TOP - 4} x2={x} y2={G_TOP + EVENTS.length * ROW_H + 2} stroke="rgba(43,33,24,0.08)" stroke-width="0.8" />
+                <text x={x} y={G_TOP - 8} text-anchor="middle" font-size="9" fill="#8A7C68">{ms}ms</text>
+                <text x={x} y={G_TOP + EVENTS.length * ROW_H + 14} text-anchor="middle" font-size="9" fill="#8A7C68">{ms}ms</text>
+              </g>
+            );
+          })}
+          <line x1={G_LEFT + G_BAR_W} y1={G_TOP - 4} x2={G_LEFT + G_BAR_W} y2={G_TOP + EVENTS.length * ROW_H + 2} stroke="rgba(43,33,24,0.35)" stroke-width="1.5" stroke-dasharray="4 3" />
+
+          {EVENTS.map((ev, i) => {
+            const rowY = G_TOP + i * ROW_H;
+            const midY = rowY + ROW_H / 2;
+            const isBold = ev.type === 'parent-bold' || ev.type === 'heading';
+            const isHeading = ev.type === 'heading';
+            const isZero = ev.type === 'zero-event';
+            const barX = G_LEFT + ms2px(ev.startMs);
+            const barW = ms2px(ev.durMs);
+            const bh = TYPE_BAR_H[ev.type] ?? 0;
+            const color = TYPE_COLOR[ev.type] ?? 'transparent';
+            return (
+              <g>
+                <text x={ev.indent * 10 + 2} y={midY + 4} font-size={isHeading ? 10 : 11} font-weight={isBold ? 700 : 400} fill={isHeading ? '#2B2118' : '#41382C'} letter-spacing={isHeading ? 0.8 : 0}>
+                  {ev.label}
+                </text>
+                {isZero ? (
+                  <polygon points={`${barX},${midY - 5} ${barX + 5},${midY} ${barX},${midY + 5} ${barX - 5},${midY}`} fill="#8A7C68" data-anim="fade" data-dur="400" />
+                ) : !isHeading && barW > 0 ? (
+                  <>
+                    <rect x={barX} y={midY - bh / 2} width={barW} height={bh} rx="2" fill={color} data-anim="grow-x" />
+                    <text x={barX + barW + 4} y={midY + 4} font-size="10" font-weight={isBold ? 700 : 400} fill={isBold ? '#2B2118' : '#5A4F40'}>
+                      {ev.durMs}ms
+                    </text>
+                  </>
+                ) : null}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    </div>
+
+    <div class="kpis">
+      {KPIS.map((k, i) => (
+        <div class="kpi-card" data-reveal data-reveal-delay={i * 60}>
+          <div class="kpi-label">{k.label}</div>
+          <div class="kpi-value">{k.value}</div>
+        </div>
+      ))}
+    </div>
+
+    <div class="table-card" data-reveal data-reveal-delay="200">
+      <div class="table-header">
+        <span>Event Category</span><span class="center">Count</span><span class="center">Avg (ms)</span><span class="center">Weight</span>
+      </div>
+      {TABLE_ROWS.map((row) => (
+        <div class="table-row">
+          <span class="cat-cell">
+            {row.cat}
+            <svg width="8" height="8" class="marker"><polygon points="4,0 8,4 4,8 0,4" fill="#8A7C68" /></svg>
+          </span>
+          <span class="center">{row.count}</span>
+          <span class="center">{row.avg}</span>
+          <span class="center">{row.weight}</span>
+        </div>
+      ))}
+      <div class="table-footer">
+        <span>Total Session</span><span class="center">11</span><span class="center">350</span><span class="center">100%</span>
+      </div>
+    </div>
+
+    <div class="source-link" data-reveal>
+      <a href="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/217%20-%20Performance%20Analysis%20(Deneb%20Template).md" target="_blank" rel="noreferrer">
+        View template <span class="arrow">&#8599;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .t17 {
+    background: var(--bg-alt);
+    padding: clamp(60px, 8vw, 120px) clamp(20px, 6vw, 80px);
+  }
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .header {
+    max-width: 780px;
+  }
+  .eyebrow {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 0 0 16px;
+  }
+  .header h2 {
+    font: 700 clamp(26px, 3.6vw, 40px)/1.12 var(--font-serif);
+    color: var(--text);
+    margin: 0 0 10px;
+  }
+  .header h2 .accent {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .sub {
+    font: 400 clamp(13px, 1.2vw, 15px)/1.6 var(--font-sans);
+    color: var(--text-muted);
+    margin: 0 0 3px;
+  }
+  .sub2 {
+    font: 400 clamp(12px, 1.1vw, 14px)/1.6 var(--font-sans);
+    color: var(--text-sub);
+    margin: 0;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font: 400 12px/1 var(--font-sans);
+    color: var(--text-body);
+    align-items: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .legend-sq {
+    width: 10px;
+    height: 10px;
+    border: 1px solid rgba(43, 33, 24, 0.18);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .diamond {
+    flex-shrink: 0;
+  }
+  .gantt-card {
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(16px, 2.5vw, 26px);
+    box-shadow: var(--card-shadow);
+    overflow-x: auto;
+  }
+  .gantt-svg {
+    width: 100%;
+    height: auto;
+    min-width: 560px;
+    font-family: 'Inter', sans-serif;
+  }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+  }
+  .kpi-card {
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: 18px 20px;
+    box-shadow: var(--card-shadow);
+  }
+  .kpi-label {
+    font: 600 10px/1 var(--font-sans);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font: 700 clamp(24px, 3vw, 32px)/1 var(--font-serif);
+    color: var(--text);
+  }
+  .table-card {
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+  }
+  .table-header {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 80px;
+    font: 700 11px/1 var(--font-sans);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-sub);
+    padding: 14px 24px;
+    background: rgba(43, 33, 24, 0.06);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .table-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 80px;
+    padding: 12px 24px;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.1);
+    align-items: center;
+    font: 400 13px/1 var(--font-sans);
+    color: var(--text-body);
+  }
+  .cat-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 500 13px/1 var(--font-sans);
+  }
+  .marker {
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+  .center {
+    text-align: center;
+  }
+  .table-footer {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 80px;
+    padding: 14px 24px;
+    background: rgba(43, 33, 24, 0.06);
+    border-top: 1px solid var(--card-border);
+    font: 700 13px/1 var(--font-sans);
+    color: var(--text);
+  }
+  .source-link {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .source-link a {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.45);
+    padding-bottom: 7px;
+  }
+</style>

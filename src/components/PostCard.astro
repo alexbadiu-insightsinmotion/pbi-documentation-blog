@@ -1,19 +1,21 @@
 ---
 import { withBase } from '../lib/url';
+import { t, type Lang } from '../i18n/dictionary';
 
 interface Props {
   slug: string;
-  title: string;
-  date: Date;
-  excerpt?: string;
+  tag: string;
+  author: string;
   cover?: string;
   index?: number;
+  lang?: Lang;
 }
 
-const { slug, title, date, excerpt, cover, index = 0 } = Astro.props;
-const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-const href = withBase(`/blog/${slug}/`);
+const { slug, tag, author, cover, index = 0, lang = 'en' } = Astro.props;
+const blogPrefix = lang === 'fr' ? '/fr/blog' : '/blog';
+const href = withBase(`${blogPrefix}/${slug}/`);
 const delay = Math.min(index, 6) * 70;
+const readMore = t(lang).readMore;
 ---
 
 <article class="post-card" data-reveal data-reveal-delay={delay}>
@@ -23,81 +25,10 @@ const delay = Math.min(index, 6) * 70;
     </a>
   )}
   <div class="body">
-    <p class="date">{formattedDate}</p>
-    <h2><a href={href}>{title}</a></h2>
-    {excerpt && <p class="excerpt">{excerpt}</p>}
-    <a href={href} class="read-more">Read more &rarr;</a>
+    <div class="meta">
+      <span class="tag">#{tag}</span>
+      <span class="author">{author}</span>
+    </div>
+    <a href={href} class="read-more">{readMore} &rarr;</a>
   </div>
 </article>
-
-<style>
-  .post-card {
-    display: flex;
-    flex-direction: column;
-    background: var(--bg-alt);
-    border: 1px solid var(--card-border);
-    border-radius: var(--card-radius);
-    box-shadow: var(--card-shadow);
-    overflow: hidden;
-    transition: transform 0.5s var(--ease-signature);
-  }
-  .post-card:hover {
-    transform: translateY(-4px);
-  }
-  .cover-link {
-    display: block;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-  }
-  .cover-link img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.7s var(--ease-signature);
-  }
-  .post-card:hover .cover-link img {
-    transform: scale(1.04);
-  }
-  .body {
-    padding: clamp(20px, 2.4vw, 28px);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .date {
-    font: 600 11px/1 var(--font-sans);
-    letter-spacing: 0.26em;
-    text-transform: uppercase;
-    color: var(--amber);
-    margin: 0;
-  }
-  .body h2 {
-    margin: 0;
-    font-size: clamp(20px, 2vw, 24px);
-    font-weight: 700;
-  }
-  .body h2 a {
-    color: var(--text);
-    text-decoration: none;
-  }
-  .body h2 a:hover {
-    color: var(--gold);
-  }
-  .excerpt {
-    color: var(--text-faint);
-    font-size: 15px;
-    line-height: 1.6;
-    margin: 0;
-  }
-  .read-more {
-    margin-top: 4px;
-    font: 600 13px/1 var(--font-sans);
-    letter-spacing: 0.04em;
-    color: var(--gold);
-    text-decoration: none;
-    transition: color 0.3s var(--ease-signature);
-  }
-  .read-more:hover {
-    color: var(--golden);
-  }
-</style>

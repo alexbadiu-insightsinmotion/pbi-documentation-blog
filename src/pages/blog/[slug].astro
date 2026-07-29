@@ -22,18 +22,21 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 });
 ---
 
-<Base title={post.data.title} description={post.data.excerpt} image={post.data.cover}>
+<Base
+  title={post.data.title}
+  description={post.data.excerpt}
+  image={post.data.cover}
+  altHref={`/fr/blog/${post.id}/`}
+>
   <article class="post">
     {post.data.cover && <img class="cover" src={post.data.cover} alt="" />}
 
     <header class="post-header" data-reveal>
-      <p class="eyebrow">{formattedDate}</p>
+      <p class="eyebrow">{formattedDate} &middot; {post.data.author}</p>
       <h1>{post.data.title}</h1>
-      {post.data.tags.length > 0 && (
-        <ul class="tags">
-          {post.data.tags.map((tag: string) => <li>{tag}</li>)}
-        </ul>
-      )}
+      <ul class="tags">
+        <li>#{post.data.tag}</li>
+      </ul>
     </header>
 
     <div class="layout">

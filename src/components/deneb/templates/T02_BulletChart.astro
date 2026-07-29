@@ -1,0 +1,20 @@
+---
+import TemplateSection from '../TemplateSection.astro';
+import ImageChartCard from '../ImageChartCard.astro';
+---
+
+<TemplateSection
+  number="02 — Bullet chart"
+  description="Compare actuals, targets, benchmarks, and qualitative performance bands within a single compact visual. Ideal for executive dashboards where space is limited but context matters."
+  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/202%20-%20Bullet%20Chart%20(Deneb%20Template).md"
+  bg="var(--bg-alt)"
+  chartFirst
+>
+  <Fragment slot="title">One bar, every <span class="accent">benchmark</span></Fragment>
+  <ImageChartCard
+    label="Performance vs target"
+    src="/assets/templates/tmpl-bullet.png"
+    alt="Bullet chart Deneb template"
+    stagger={140}
+  />
+</TemplateSection>

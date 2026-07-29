@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import IntroSection from '../components/deneb/IntroSection.astro';
+import ClosingSection from '../components/deneb/ClosingSection.astro';
+import T01_SpaceSavingBar from '../components/deneb/templates/T01_SpaceSavingBar.astro';
+import T02_BulletChart from '../components/deneb/templates/T02_BulletChart.astro';
+import T03_HeatMap from '../components/deneb/templates/T03_HeatMap.astro';
+import T04_RingChart from '../components/deneb/templates/T04_RingChart.astro';
+import T05_LinearGauge from '../components/deneb/templates/T05_LinearGauge.astro';
+import T06_ColumnChart2Level from '../components/deneb/templates/T06_ColumnChart2Level.astro';
+import T07_Quadrants from '../components/deneb/templates/T07_Quadrants.astro';
+import T08_ViolinBoxPlot from '../components/deneb/templates/T08_ViolinBoxPlot.astro';
+import T09_Regression from '../components/deneb/templates/T09_Regression.astro';
+import T10_VarianceAnalysis from '../components/deneb/templates/T10_VarianceAnalysis.astro';
+import T11_IBCS from '../components/deneb/templates/T11_IBCS.astro';
+import T12_AreaMinMax from '../components/deneb/templates/T12_AreaMinMax.astro';
+import T13_Waterfall from '../components/deneb/templates/T13_Waterfall.astro';
+import T14_Correlation from '../components/deneb/templates/T14_Correlation.astro';
+import T15_FinancialWaterfall from '../components/deneb/templates/T15_FinancialWaterfall.astro';
+import T16_Sunburst from '../components/deneb/templates/T16_Sunburst.astro';
+import T17_PerfAnalysis from '../components/deneb/templates/T17_PerfAnalysis.astro';
+---
+
+<Base
+  title="Deneb Templates"
+  description="A curated gallery of 17 reusable Deneb (Vega-Lite) custom visual templates for Power BI."
+>
+  <IntroSection />
+  <T01_SpaceSavingBar />
+  <T02_BulletChart />
+  <T03_HeatMap />
+  <T04_RingChart />
+  <T05_LinearGauge />
+  <T06_ColumnChart2Level />
+  <T07_Quadrants />
+  <T08_ViolinBoxPlot />
+  <T09_Regression />
+  <T10_VarianceAnalysis />
+  <T11_IBCS />
+  <T12_AreaMinMax />
+  <T13_Waterfall />
+  <T14_Correlation />
+  <T15_FinancialWaterfall />
+  <T16_Sunburst />
+  <T17_PerfAnalysis />
+  <ClosingSection />
+</Base>
+
+<script>
+  import { initChartAnimations } from '../scripts/chartAnimation';
+  import { initCountUp } from '../scripts/countUp';
+  initChartAnimations();
+  initCountUp();
+</script>

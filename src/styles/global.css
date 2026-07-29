@@ -82,6 +82,90 @@
   background-size: 220px;
 }
 
+/* ─── Post card — shared by the home grid (Astro-rendered) and Search
+   (injected via innerHTML), so it must be global, not component-scoped ── */
+.post-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-alt);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: transform 0.5s var(--ease-signature);
+}
+.post-card:hover {
+  transform: translateY(-4px);
+}
+.post-card .cover-link {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+.post-card .cover-link img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s var(--ease-signature);
+}
+.post-card:hover .cover-link img {
+  transform: scale(1.04);
+}
+.post-card .body {
+  padding: clamp(18px, 2vw, 22px) clamp(20px, 2.4vw, 28px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.post-card .body h2 {
+  margin: 0;
+  font-size: clamp(17px, 1.7vw, 19px);
+  font-weight: 700;
+}
+.post-card .body h2 a {
+  color: var(--text);
+  text-decoration: none;
+}
+.post-card .body h2 a:hover {
+  color: var(--gold);
+}
+.post-card .meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.post-card .tag {
+  font: 600 11px/1 var(--font-sans);
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  background: rgba(201, 162, 39, 0.12);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+.post-card .author {
+  font-size: 13px;
+  color: var(--text-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.post-card .read-more {
+  flex-shrink: 0;
+  font: 600 13px/1 var(--font-sans);
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  text-decoration: none;
+  transition: color 0.3s var(--ease-signature);
+}
+.post-card .read-more:hover {
+  color: var(--golden);
+}
+
 /* ─── Prose (blog post body) ───────────────────────────────────────── */
 .prose-post {
   color: var(--text-body);

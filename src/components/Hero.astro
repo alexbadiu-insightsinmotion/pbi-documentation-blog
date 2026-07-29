@@ -1,11 +1,19 @@
 ---
 import { site } from '../site.config';
+import { t, type Lang } from '../i18n/dictionary';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const dict = t(lang);
+const description = lang === 'fr' ? site.descriptionFr : site.description;
 ---
 
 <section class="hero">
   <div class="glow" aria-hidden="true"></div>
 
-  <p class="eyebrow" data-reveal>A blog on documenting Power&nbsp;BI, properly</p>
+  <p class="eyebrow" data-reveal>{dict.hero.eyebrow}</p>
 
   <h1 class="headline" data-reveal data-reveal-delay="120">
     {site.wordmark.main} <span class="shimmer">{site.wordmark.accent}</span>
@@ -13,7 +21,7 @@ import { site } from '../site.config';
 
   <div class="divider" data-reveal data-reveal-delay="240"></div>
 
-  <p class="subtitle" data-reveal data-reveal-delay="320">{site.description}</p>
+  <p class="subtitle" data-reveal data-reveal-delay="320">{description}</p>
 </section>
 
 <style>
