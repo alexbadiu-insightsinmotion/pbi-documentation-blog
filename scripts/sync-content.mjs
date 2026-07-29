@@ -79,10 +79,24 @@ async function getFirstCommitDate(file, token) {
 }
 
 function extractCover(body) {
-  const match = body.match(/<img[^>]*\ssrc=["']([^"']+)["'][^>]*\/?>/i);
+  // Some posts use an HTML <img>, others a markdown ![alt](url) image —
+  // whichever appears first in the body is the intended cover.
+  const htmlMatch = body.match(/<img[^>]*\ssrc=["']([^"']+)["'][^>]*\/?>/i);
+  const mdMatch = body.match(/!\[[^\]]*\]\(([^)]+)\)/);
+
+  let match = null;
+  let url;
+  if (htmlMatch && (!mdMatch || body.indexOf(htmlMatch[0]) <= body.indexOf(mdMatch[0]))) {
+    match = htmlMatch;
+    url = htmlMatch[1];
+  } else if (mdMatch) {
+    match = mdMatch;
+    url = mdMatch[1];
+  }
+
   if (!match) return { cover: undefined, body };
   const cleaned = body.replace(match[0], '').replace(/^\s+/, '');
-  return { cover: match[1], body: cleaned };
+  return { cover: url, body: cleaned };
 }
 
 function stripTableOfContents(body) {

@@ -118,18 +118,6 @@
   justify-content: space-between;
   gap: 12px;
 }
-.post-card .body h2 {
-  margin: 0;
-  font-size: clamp(17px, 1.7vw, 19px);
-  font-weight: 700;
-}
-.post-card .body h2 a {
-  color: var(--text);
-  text-decoration: none;
-}
-.post-card .body h2 a:hover {
-  color: var(--gold);
-}
 .post-card .meta {
   display: flex;
   align-items: center;
@@ -200,6 +188,27 @@
   border-radius: 4px;
   padding: 0.15em 0.4em;
   font-size: 0.9em;
+}
+/* Shiki wraps a whole fenced code block in one multi-line <code> inside
+   <pre> — since `code` is inline by default, the chip styling above would
+   render as one fragment per visual line. Reset it here so code blocks
+   render as a single cohesive block, and give the block itself the site's
+   card treatment. */
+.prose-post pre {
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  padding: 1.1em 1.3em;
+  margin: 1.6em 0;
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+.prose-post pre code {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  font-size: inherit;
 }
 .prose-post blockquote {
   border-left: 3px solid var(--golden);

@@ -30,7 +30,7 @@ const formattedDate = post.data.date.toLocaleDateString('fr-FR', {
   altHref={`/blog/${post.data.enSlug}/`}
 >
   <article class="post">
-    {post.data.cover && <img class="cover" src={post.data.cover} alt="" />}
+    {post.data.cover && <img class="cover" src={post.data.cover} alt="" onerror="this.style.display='none'" />}
 
     <header class="post-header" data-reveal>
       <p class="eyebrow">{formattedDate} &middot; {post.data.author}</p>

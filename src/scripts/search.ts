@@ -12,13 +12,12 @@ interface SearchItem {
 function cardHtml(item: SearchItem): string {
   const href = withBase(`/blog/${item.slug}/`);
   const cover = item.cover
-    ? `<a href="${href}" class="cover-link" tabindex="-1"><img src="${item.cover}" alt="" loading="lazy" /></a>`
+    ? `<a href="${href}" class="cover-link" tabindex="-1"><img src="${item.cover}" alt="" loading="lazy" onerror="this.closest('.cover-link').style.display='none'" /></a>`
     : '';
   return `
     <article class="post-card">
       ${cover}
       <div class="body">
-        <h2><a href="${href}">${item.title}</a></h2>
         <div class="meta"><span class="tag">#${item.tag}</span><span class="author">${item.author}</span></div>
         <a href="${href}" class="read-more">Read more &rarr;</a>
       </div>

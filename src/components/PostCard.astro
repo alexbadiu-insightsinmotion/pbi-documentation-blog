@@ -21,7 +21,7 @@ const readMore = t(lang).readMore;
 <article class="post-card" data-reveal data-reveal-delay={delay}>
   {cover && (
     <a href={href} class="cover-link" tabindex="-1">
-      <img src={cover} alt="" loading="lazy" />
+      <img src={cover} alt="" loading="lazy" onerror="this.closest('.cover-link').style.display='none'" />
     </a>
   )}
   <div class="body">
