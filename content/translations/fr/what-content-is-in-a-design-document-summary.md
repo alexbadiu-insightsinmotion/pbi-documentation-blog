@@ -3,6 +3,7 @@ title: "Quel contenu figure dans un Design Document - Résumé"
 date: 2025-06-10
 tag: "designdocument"
 author: "Alex Badiu"
+cover: "https://github.com/user-attachments/assets/c7269671-0b88-481b-8739-ff3078ae450f"
 excerpt: "Quel est le résumé des principaux points de contenu d'un Design Document ? Tout au long de cette série, de nombreux points ont été abordés dans chacune des grandes sections du design document Powe..."
 sourceFile: "16 - What content is in a Design Document - Summary.md"
 sourceUrl: "https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/16%20-%20What%20content%20is%20in%20a%20Design%20Document%20-%20Summary.md"

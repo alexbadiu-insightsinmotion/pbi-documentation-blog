@@ -2,7 +2,7 @@
 title: "Renforcer l'adoption par les utilisateurs - Partie 2"
 date: 2025-06-17
 tag: "useradoption"
-author: "Alex Badiu"
+author: "Greg Philps"
 cover: "https://github.com/user-attachments/assets/1e908332-8534-4a1e-8300-feb62387e68e"
 excerpt: "La création de contenu par IA transforme l'onboarding et l'engagement des utilisateurs métier avec l'analytique. Ce qui prenait des jours se fait désormais en quelques heures."
 sourceFile: "17 - Enhancing User Adoption - Part 2.md"

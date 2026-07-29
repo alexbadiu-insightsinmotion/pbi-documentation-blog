@@ -2,7 +2,7 @@
 title: "Quel contenu inclure dans un document de conception - Généralités et périmètre"
 date: 2025-02-11
 tag: "designdocument"
-author: "Alex Badiu"
+author: "Greg Philps"
 cover: "https://github.com/user-attachments/assets/8cc575b1-04a8-4c1d-bf23-3ef29b56847d"
 excerpt: "Quel contenu inclure dans un document de conception ? Beaucoup voient la documentation comme un frein au développement agile et itératif. C'est loin d'être la vérité..."
 sourceFile: "03 - What content is in a Design Document - General and Scope.md"

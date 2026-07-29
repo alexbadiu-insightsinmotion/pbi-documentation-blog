@@ -1,0 +1,48 @@
+---
+import IntroSection from './IntroSection.astro';
+import ClosingSection from './ClosingSection.astro';
+import T01_SpaceSavingBar from './templates/T01_SpaceSavingBar.astro';
+import T02_BulletChart from './templates/T02_BulletChart.astro';
+import T03_HeatMap from './templates/T03_HeatMap.astro';
+import T04_RingChart from './templates/T04_RingChart.astro';
+import T05_LinearGauge from './templates/T05_LinearGauge.astro';
+import T06_ColumnChart2Level from './templates/T06_ColumnChart2Level.astro';
+import T07_Quadrants from './templates/T07_Quadrants.astro';
+import T08_ViolinBoxPlot from './templates/T08_ViolinBoxPlot.astro';
+import T09_Regression from './templates/T09_Regression.astro';
+import T10_VarianceAnalysis from './templates/T10_VarianceAnalysis.astro';
+import T11_IBCS from './templates/T11_IBCS.astro';
+import T12_AreaMinMax from './templates/T12_AreaMinMax.astro';
+import T13_Waterfall from './templates/T13_Waterfall.astro';
+import T14_Correlation from './templates/T14_Correlation.astro';
+import T15_FinancialWaterfall from './templates/T15_FinancialWaterfall.astro';
+import T16_Sunburst from './templates/T16_Sunburst.astro';
+import T17_PerfAnalysis from './templates/T17_PerfAnalysis.astro';
+---
+
+<IntroSection />
+<T01_SpaceSavingBar />
+<T02_BulletChart />
+<T03_HeatMap />
+<T04_RingChart />
+<T05_LinearGauge />
+<T06_ColumnChart2Level />
+<T07_Quadrants />
+<T08_ViolinBoxPlot />
+<T09_Regression />
+<T10_VarianceAnalysis />
+<T11_IBCS />
+<T12_AreaMinMax />
+<T13_Waterfall />
+<T14_Correlation />
+<T15_FinancialWaterfall />
+<T16_Sunburst />
+<T17_PerfAnalysis />
+<ClosingSection />
+
+<script>
+  import { initChartAnimations } from '../../scripts/chartAnimation';
+  import { initCountUp } from '../../scripts/countUp';
+  initChartAnimations();
+  initCountUp();
+</script>

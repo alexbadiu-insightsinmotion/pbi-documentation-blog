@@ -1,12 +1,12 @@
 ---
+title: "Documenter le binding des Translytical Task Flow avec PBIR"
 date: 2026-03-31
 tag: "PBIR"
 author: "Alex Badiu"
-cover: "https://github.com/user-attachments/assets/056ee44f-4e2a-4105-960e-b2238008721f"
+cover: "https://github.com/user-attachments/assets/aa90b868-7b7d-4849-b745-69a30eaa0c23"
+excerpt: "Les Translytical Task Flows sont en disponibilité générale, mais documenter leur câblage n'est pas si simple."
 sourceFile: "24 - Documenting Translytical Task Flow binding with PBIR.md"
 sourceUrl: "https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/24%20-%20Documenting%20Translytical%20Task%20Flow%20binding%20with%20PBIR.md"
-title: "Documenter le binding des Translytical Task Flow avec PBIR"
-excerpt: "Les Translytical Task Flows sont en disponibilité générale, mais documenter leur câblage n'est pas si simple."
 enSlug: "documenting-translytical-task-flow-binding-with-pbir"
 ---
 

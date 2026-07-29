@@ -1,12 +1,12 @@
 ---
+title: "Documenter les Bookmarks avec PBIR"
 date: 2025-09-10
 tag: "PBIR"
 author: "Alex Badiu"
-cover: "https://github.com/user-attachments/assets/a127debe-a809-477f-a8a8-4c164b84e07f"
+cover: "https://github.com/user-attachments/assets/d39b541e-ef45-48cd-88ca-15466fd1cd82"
+excerpt: "Les bookmarks Power BI sont des outils puissants pour créer des rapports interactifs, mais bien les documenter peut être difficile. Découvrez comment extraire une documentation..."
 sourceFile: "21 - Documenting Bookmarks with PBIR.md"
 sourceUrl: "https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/21%20-%20Documenting%20Bookmarks%20with%20PBIR.md"
-title: "Documenter les Bookmarks avec PBIR"
-excerpt: "Les bookmarks Power BI sont des outils puissants pour créer des rapports interactifs, mais bien les documenter peut être difficile. Découvrez comment extraire une documentation..."
 enSlug: "documenting-bookmarks-with-pbir"
 ---
 

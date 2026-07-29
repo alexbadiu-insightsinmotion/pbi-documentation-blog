@@ -3,7 +3,7 @@ title: "Quel contenu doit figurer dans un Design Document - Déploiement"
 date: 2025-04-29
 tag: "designdocument"
 author: "Alex Badiu"
-cover: "https://github.com/user-attachments/assets/b3042ccf-942c-4c28-94d4-a93cc7187c1f"
+cover: "https://github.com/user-attachments/assets/2fc92e49-5e63-49da-a877-e93b33c63606"
 excerpt: "Quelles caractéristiques de déploiement doivent être décrites dans un Design Document ?"
 sourceFile: "13 - What content is in a Design Document - Deployment.md"
 sourceUrl: "https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/13%20-%20What%20content%20is%20in%20a%20Design%20Document%20-%20Deployment.md"

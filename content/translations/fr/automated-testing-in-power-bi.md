@@ -1,12 +1,12 @@
 ---
+title: "Les tests automatisés dans Power BI"
 date: 2025-03-04
 tag: "testing"
-author: "Alex Badiu"
+author: "Greg Philps"
 cover: "https://github.com/user-attachments/assets/953efa1b-1be3-47f0-adb9-7bb60d430a2b"
+excerpt: "Avez-vous déjà mis un rapport en production après des tests, pour que les utilisateurs finaux signalent ensuite des problèmes qui auraient pu être détectés plus tôt ?"
 sourceFile: "06 - Automated Testing in Power BI.md"
 sourceUrl: "https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/06%20-%20Automated%20Testing%20in%20Power%20BI.md"
-title: "Les tests automatisés dans Power BI"
-excerpt: "Avez-vous déjà mis un rapport en production après des tests, pour que les utilisateurs finaux signalent ensuite des problèmes qui auraient pu être détectés plus tôt ?"
 enSlug: "automated-testing-in-power-bi"
 ---
 

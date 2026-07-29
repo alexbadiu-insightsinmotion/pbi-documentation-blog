@@ -58,9 +58,22 @@ To add a translation for a new post: translate the synced English file
 plus an `enSlug` field pointing back at the English slug, and write it to
 `content/translations/fr/<slug>.md`.
 
-Search, Contact, Subscribe, and the Deneb gallery (`/deneb/`) are English-only —
-only the blog posts, home page, and site chrome (nav/footer/hero) are bilingual
-for now.
+**Keeping pass-through fields in sync:** `date`, `tag`, `author`, `cover`,
+`sourceFile`, and `sourceUrl` are just copied from English at translation
+time — if the source repo's image link gets fixed, or a manifest tag/author
+gets corrected later, the French file would otherwise keep the stale value
+forever. `npm run sync` runs `scripts/sync-fr-metadata.mjs` right after the
+regular sync, which re-patches exactly those fields in every French file from
+the current English sync — it never touches the translated title, excerpt, or
+body.
+
+Contact and Search have full French versions (`/fr/contact/`, `/fr/search/`,
+with their own copy). Search's index (`search-index.json.js`) merges both
+`blog` and `blogFr` collections, so either language's search page can surface
+both — each result links to its own correct language and URL. The Deneb
+gallery has a French chrome version (`/fr/deneb/`) too, but the 17 templates'
+own text stays English (translating that content is out of scope) — a small
+note on that page says so in French. Subscribe stays English-only.
 
 ## Commands
 
@@ -91,8 +104,16 @@ that are set.
 
 There's no newsletter service wired up, and no account was created as part of
 building this. Instead, `Subscribe.astro` links to this repo's **Announcements**
-Discussions category. Whoever clicks "Watch" there gets a real email straight
-from GitHub — no third-party service, no API key.
+Discussions category. To subscribe, a reader:
+1. Opens the [Announcements category](https://github.com/alexbadiu-insightsinmotion/pbi-documentation-blog/discussions/categories/announcements) (signs in to GitHub if needed).
+2. Clicks the **Watch** button near the top of the repo page.
+3. Chooses **All Activity** (or **Custom → Discussions** to only watch this).
+
+From then on, GitHub itself emails them the moment a new post is announced
+there — no third-party service, no API key. There's a "How to get notified
+about new posts" discussion in that category with the same steps (pin it
+from the Discussions UI if you want it to stay at the top — the GraphQL API
+doesn't expose pinning).
 
 The other half is `scripts/announce-new-posts.mjs`, which runs as part of the
 deploy workflow right after `npm run sync`: it compares the freshly-synced posts

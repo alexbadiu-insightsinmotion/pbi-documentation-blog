@@ -3,6 +3,7 @@ title: "Quel contenu inclure dans un modèle de spécification de recueil des be
 date: 2025-06-26
 tag: "requirements"
 author: "Alex Badiu"
+cover: "https://github.com/user-attachments/assets/43f99a32-f757-470f-bee6-42c760d518fa"
 excerpt: "Quel contenu inclure dans un modèle de spécification de recueil des besoins ? Les projets de reporting échouent souvent car trop de périmètre est visé pour les ressources disponibles..."
 sourceFile: "18 - What content is in a Requirements Gathering Specification Template.md"
 sourceUrl: "https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/18%20-%20What%20content%20is%20in%20a%20Requirements%20Gathering%20Specification%20Template.md"

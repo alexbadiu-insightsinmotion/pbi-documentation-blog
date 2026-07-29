@@ -2,7 +2,7 @@
 title: "Quel contenu doit figurer dans un Document de Conception - Rapports"
 date: 2025-03-24
 tag: "designdocument"
-author: "Alex Badiu"
+author: "Greg Philps"
 cover: "https://github.com/user-attachments/assets/124ffa1b-0dd0-4ba9-a9d6-2c6e95a39302"
 excerpt: "Quelles caractéristiques des rapports doivent être décrites dans un Document de Conception ? De nombreux projets Power BI comportent plusieurs fichiers, et la conception est donc souvent dispersée..."
 sourceFile: "09 - What content is in a Design Document - Reports.md"

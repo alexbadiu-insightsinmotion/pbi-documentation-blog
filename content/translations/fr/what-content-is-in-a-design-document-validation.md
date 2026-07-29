@@ -3,7 +3,7 @@ title: "Quel contenu figure dans un Design Document - Validation"
 date: 2025-04-15
 tag: "designdocument"
 author: "Alex Badiu"
-cover: "https://github.com/user-attachments/assets/f3e173c7-ea82-461b-bb10-206ec33d1878"
+cover: "https://github.com/user-attachments/assets/f1f0905b-b135-47fd-bd40-751ff21828cc"
 excerpt: "Quelles caractéristiques de Validation doivent être décrites dans un Design Document ?"
 sourceFile: "11 - What content is in a Design Document - Validation.md"
 sourceUrl: "https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/11%20-%20What%20content%20is%20in%20a%20Design%20Document%20-%20Validation.md"

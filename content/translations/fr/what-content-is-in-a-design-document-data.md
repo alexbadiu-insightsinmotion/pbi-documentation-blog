@@ -2,7 +2,7 @@
 title: "Quel contenu inclure dans un Document de Conception - Données"
 date: 2025-03-11
 tag: "designdocument"
-author: "Alex Badiu"
+author: "Greg Philps"
 cover: "https://github.com/user-attachments/assets/a0ac9319-73ea-4506-b5ba-e507d080ca47"
 excerpt: "Quelles caractéristiques des données décrire dans un Document de Conception ? Le mode de connexion Power BI (import ou direct) détermine le format et l'impact de la section données."
 sourceFile: "07 - What content is in a Design Document - Data.md"

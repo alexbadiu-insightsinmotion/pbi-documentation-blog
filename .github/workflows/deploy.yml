@@ -45,13 +45,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit updated announced-posts.json (if changed)
+      - name: Commit sync-generated changes (if any)
         run: |
-          if ! git diff --quiet -- announced-posts.json; then
+          if ! git diff --quiet -- announced-posts.json content/translations/fr/; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add announced-posts.json
-            git commit -m "Record newly announced posts [skip ci]"
+            git add announced-posts.json content/translations/fr/
+            git commit -m "Sync: record announced posts, refresh FR metadata [skip ci]"
             git push
           fi
 

@@ -1,7 +1,9 @@
 import { withBase } from '../lib/url';
+import { dictionary } from '../i18n/dictionary';
 
 interface SearchItem {
   slug: string;
+  lang: 'en' | 'fr';
   title: string;
   tag: string;
   author: string;
@@ -10,16 +12,22 @@ interface SearchItem {
 }
 
 function cardHtml(item: SearchItem): string {
-  const href = withBase(`/blog/${item.slug}/`);
+  const blogPrefix = item.lang === 'fr' ? '/fr/blog' : '/blog';
+  const href = withBase(`${blogPrefix}/${item.slug}/`);
   const cover = item.cover
     ? `<a href="${href}" class="cover-link" tabindex="-1"><img src="${item.cover}" alt="" loading="lazy" onerror="this.closest('.cover-link').style.display='none'" /></a>`
     : '';
+  const readMore = dictionary[item.lang].readMore;
   return `
     <article class="post-card">
       ${cover}
       <div class="body">
-        <div class="meta"><span class="tag">#${item.tag}</span><span class="author">${item.author}</span></div>
-        <a href="${href}" class="read-more">Read more &rarr;</a>
+        <div class="meta">
+          <span class="tag">#${item.tag}</span>
+          <span class="lang-badge">${item.lang.toUpperCase()}</span>
+          <span class="author">${item.author}</span>
+        </div>
+        <a href="${href}" class="read-more">${readMore} &rarr;</a>
       </div>
     </article>`;
 }

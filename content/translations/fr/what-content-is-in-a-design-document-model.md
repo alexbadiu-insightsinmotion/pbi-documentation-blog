@@ -1,12 +1,12 @@
 ---
+title: "Quel contenu inclure dans un Design Document – Modèle"
 date: 2025-05-20
 tag: "designdocument"
 author: "Alex Badiu"
-cover: "https://github.com/user-attachments/assets/9806fa6b-945c-4e83-84e6-57e2e5009b59"
+cover: "https://github.com/user-attachments/assets/5394d34e-8b71-494e-8645-ca8a9e3cc046"
+excerpt: "Quelles caractéristiques du modèle doivent être décrites dans un Design Document ?"
 sourceFile: "15 - What content is in a Design Document - Model.md"
 sourceUrl: "https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/15%20-%20What%20content%20is%20in%20a%20Design%20Document%20-%20Model.md"
-title: "Quel contenu inclure dans un Design Document – Modèle"
-excerpt: "Quelles caractéristiques du modèle doivent être décrites dans un Design Document ?"
 enSlug: "what-content-is-in-a-design-document-model"
 ---
 
