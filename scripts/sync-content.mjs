@@ -2,7 +2,8 @@
 // PBI-Documentation GitHub repo and materializes them as Astro content
 // collection entries in src/content/blog/. That output folder is gitignored
 // and regenerated on every run, so PBI-Documentation stays the single
-// source of truth — nothing here ever needs to be edited by hand.
+// source of truth — nothing here ever needs to be edited by hand. Stale files
+// are pruned only when every manifest entry synced cleanly.
 
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { execSync } from 'node:child_process';
@@ -12,6 +13,8 @@ import { fileURLToPath } from 'node:url';
 const OWNER = 'alexbadiu-insightsinmotion';
 const REPO = 'PBI-Documentation';
 const BRANCH = 'main';
+const API_ROOT = 'https://api.github.com';
+const MAX_ATTEMPTS = 4;
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url)) + '/..';
 const MANIFEST_PATH = path.join(ROOT, 'content-manifest.json');
@@ -26,10 +29,38 @@ function resolveToken() {
   }
 }
 
-function authHeaders(token) {
-  const headers = { 'User-Agent': 'pbi-documentation-blog-sync' };
+function authHeaders(token, accept = 'application/vnd.github+json') {
+  const headers = { 'User-Agent': 'pbi-documentation-blog-sync', Accept: accept };
   if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Every request goes through api.github.com rather than raw.githubusercontent.com.
+// The raw host ignores the Authorization header entirely and throttles per-IP, so
+// a token buys nothing there and one throttled IP fails all posts at once. The API
+// path is authenticated (5000 req/hr) and transient throttles get backed off here.
+async function fetchWithRetry(url, headers) {
+  let lastStatus = 'unknown error';
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+    const res = await fetch(url, { headers });
+    if (res.ok) return res;
+    lastStatus = `${res.status} ${res.statusText}`;
+
+    const retryable = res.status === 429 || res.status === 403 || res.status >= 500;
+    if (!retryable || attempt === MAX_ATTEMPTS) break;
+
+    const retryAfter = Number(res.headers.get('retry-after'));
+    const waitMs = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 1000 * 2 ** (attempt - 1);
+    console.warn(`    … ${lastStatus} — retrying in ${Math.round(waitMs / 1000)}s (attempt ${attempt + 1}/${MAX_ATTEMPTS})`);
+    await sleep(waitMs);
+  }
+
+  throw new Error(lastStatus);
 }
 
 function slugify(title) {
@@ -46,20 +77,24 @@ function titleFromFilename(file) {
     .trim();
 }
 
-async function fetchRawMarkdown(file) {
+async function fetchRawMarkdown(file, token) {
   const encodedPath = file.split('/').map(encodeURIComponent).join('/');
-  const url = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${encodedPath}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch ${file}: ${res.status} ${res.statusText}`);
-  return res.text();
+  const url = `${API_ROOT}/repos/${OWNER}/${REPO}/contents/${encodedPath}?ref=${BRANCH}`;
+  try {
+    // The raw media type hands back the file body verbatim, so there is no
+    // base64 envelope to decode and no 1 MB JSON payload ceiling.
+    const res = await fetchWithRetry(url, authHeaders(token, 'application/vnd.github.raw'));
+    return await res.text();
+  } catch (err) {
+    throw new Error(`Failed to fetch ${file}: ${err.message}`);
+  }
 }
 
 async function getFirstCommitDate(file, token) {
   try {
-    const api = `https://api.github.com/repos/${OWNER}/${REPO}/commits`;
+    const api = `${API_ROOT}/repos/${OWNER}/${REPO}/commits`;
     const qs = `path=${encodeURIComponent(file)}&per_page=1`;
-    const first = await fetch(`${api}?${qs}`, { headers: authHeaders(token) });
-    if (!first.ok) return null;
+    const first = await fetchWithRetry(`${api}?${qs}`, authHeaders(token));
 
     let lastPage = 1;
     const link = first.headers.get('link');
@@ -68,7 +103,7 @@ async function getFirstCommitDate(file, token) {
       if (match) lastPage = parseInt(match[1], 10);
     }
 
-    const res = lastPage === 1 ? first : await fetch(`${api}?${qs}&page=${lastPage}`, { headers: authHeaders(token) });
+    const res = lastPage === 1 ? first : await fetchWithRetry(`${api}?${qs}&page=${lastPage}`, authHeaders(token));
     const data = await res.json();
     const commit = Array.isArray(data) ? data[data.length - 1] : null;
     const date = commit?.commit?.author?.date;
@@ -146,11 +181,17 @@ function toFrontmatterValue(value) {
 async function run() {
   const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf8'));
   const token = resolveToken();
+  if (!token) {
+    console.warn('No GitHub token found — set GITHUB_TOKEN or run `gh auth login`, otherwise requests are unauthenticated and throttle quickly.\n');
+  }
 
-  await rm(OUT_DIR, { recursive: true, force: true });
   await mkdir(OUT_DIR, { recursive: true });
 
-  let ok = 0;
+  // Fetch everything before touching the output folder. Clearing it up front
+  // meant a throttled or offline run wiped every post and left the content
+  // collection empty, which breaks the dev server rather than degrading to
+  // the content already on disk.
+  const generated = [];
   const failures = [];
 
   for (const entry of manifest) {
@@ -158,7 +199,7 @@ async function run() {
       if (!entry.tag) throw new Error('manifest entry is missing required "tag"');
       if (!entry.author) throw new Error('manifest entry is missing required "author"');
 
-      const raw = await fetchRawMarkdown(entry.file);
+      const raw = await fetchRawMarkdown(entry.file, token);
       const title = entry.title ?? titleFromFilename(entry.file);
       const slug = entry.slug ?? slugify(title);
 
@@ -181,8 +222,7 @@ async function run() {
       ].filter(Boolean).join('\n');
       const frontmatterBlock = `---\n${frontmatter}\n---\n\n`;
 
-      await writeFile(path.join(OUT_DIR, `${slug}.md`), frontmatterBlock + body + '\n', 'utf8');
-      ok += 1;
+      generated.push({ file: entry.file, filename: `${slug}.md`, contents: frontmatterBlock + body + '\n' });
       console.log(`  ✓ ${entry.file} -> ${slug}.md`);
     } catch (err) {
       failures.push({ file: entry.file, error: err.message });
@@ -190,9 +230,26 @@ async function run() {
     }
   }
 
-  console.log(`\nSynced ${ok}/${manifest.length} posts into src/content/blog/`);
+  for (const post of generated) {
+    await writeFile(path.join(OUT_DIR, post.filename), post.contents, 'utf8');
+  }
+
+  // Prune only after a clean sweep. On a partial run the leftovers may well be
+  // the still-good copies of the posts that just failed.
+  if (!failures.length) {
+    const keep = new Set(generated.map((post) => post.filename));
+    for (const name of await readdir(OUT_DIR)) {
+      if (name.endsWith('.md') && !keep.has(name)) {
+        await rm(path.join(OUT_DIR, name));
+        console.log(`  - removed stale ${name}`);
+      }
+    }
+  }
+
+  console.log(`\nSynced ${generated.length}/${manifest.length} posts into src/content/blog/`);
   if (failures.length) {
     console.error(`${failures.length} post(s) failed to sync — see errors above.`);
+    console.error('Content already in src/content/blog/ was left in place.');
     process.exitCode = 1;
   }
 }
