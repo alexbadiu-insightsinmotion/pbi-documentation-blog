@@ -1,24 +1,17 @@
 ---
 import Base from '../../layouts/Base.astro';
 import DenebGallery from '../../components/deneb/DenebGallery.astro';
+import FrNote from '../../components/FrNote.astro';
+import { TEMPLATES } from '../../components/deneb/templates.ts';
+import { t } from '../../i18n/dictionary';
 ---
 
 <Base
-  title="Deneb Templates"
-  description="Une galerie de 17 templates Deneb (Vega-Lite) réutilisables pour Power BI."
+  title="Templates Deneb"
+  description={`Une galerie de ${TEMPLATES.length} templates Deneb (Vega-Lite) réutilisables pour Power BI.`}
   lang="fr"
   altHref="/deneb/"
 >
-  <p class="fr-note">Cette galerie de templates est présentée en anglais.</p>
-  <DenebGallery />
+  <FrNote text={t('fr').linkedDocsNote} />
+  <DenebGallery lang="fr" />
 </Base>
-
-<style>
-  .fr-note {
-    text-align: center;
-    padding: 16px clamp(24px, 5vw, 48px) 0;
-    font-size: 14px;
-    font-style: italic;
-    color: var(--text-sub);
-  }
-</style>

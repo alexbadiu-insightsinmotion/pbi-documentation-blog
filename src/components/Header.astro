@@ -14,6 +14,8 @@ const prefix = lang === 'fr' ? '/fr' : '';
 const nav = [
   { href: `${prefix}/`, label: dict.nav.home },
   { href: `${prefix}/deneb/`, label: dict.nav.deneb },
+  { href: `${prefix}/tmdl/`, label: dict.nav.tmdl },
+  { href: `${prefix}/themes/`, label: dict.nav.themes },
   { href: `${prefix}/search/`, label: dict.nav.search },
   { href: `${prefix}/contact/`, label: dict.nav.contact },
 ];
@@ -41,7 +43,12 @@ const switchHref = altHref ?? (lang === 'en' ? '/fr/' : '/');
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
+    /* The header wraps before the nav does. Six links plus the pill cannot share a
+       line with the wordmark on a phone, and letting the nav squeeze into the
+       ~150px left beside it pushed the links onto four rows. Dropping the nav to
+       its own full-width line first keeps it to two. */
+    flex-wrap: wrap;
+    gap: 12px 24px;
     padding: 20px clamp(24px, 5vw, 48px);
     background: rgba(244, 236, 221, 0.82);
     backdrop-filter: blur(10px);
@@ -62,7 +69,13 @@ const switchHref = altHref ?? (lang === 'en' ? '/fr/' : '/');
   .nav {
     display: flex;
     align-items: center;
-    gap: clamp(16px, 3vw, 32px);
+    /* Six links plus the language pill no longer fit on one line on a phone, and
+       body { overflow-x: hidden } would clip rather than scroll the overflow.
+       Wrapping to a second line is the intended trade. */
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+    gap: 10px clamp(14px, 3vw, 32px);
   }
   .nav a {
     font: 600 13px/1 var(--font-sans);

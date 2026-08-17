@@ -1,4 +1,7 @@
 ---
+import { bandStyle } from '../templates.ts';
+import type { DenebExtras } from '../../../i18n/deneb';
+
 const ROWS = [
   { label: 'Aurum Co.', value: 980 },
   { label: 'Soleil Ltd', value: 845 },
@@ -9,27 +12,43 @@ const ROWS = [
   { label: 'Thorne', value: 410 },
   { label: 'Bellwether', value: 360 },
 ];
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  chartLabel: string;
+  viewLabel: string;
+  extras: DenebExtras;
+}
+// chartFirst is accepted for a uniform gallery contract but unused: this section
+// owns its own two-column grid and is always text-left.
+const { alt, id, number, title, description, chartLabel, viewLabel, extras } = Astro.props;
 ---
 
-<section class="t01">
+<section class="t01" id={id} style={bandStyle(alt)}>
   <div class="grid">
     <div class="text">
-      <p class="eyebrow" data-reveal>01 &mdash; Space-saving bar</p>
-      <h2 data-reveal data-reveal-delay="80">Top N, <span class="accent">then Others</span></h2>
-      <p class="desc" data-reveal data-reveal-delay="160">
-        Full-width bars rank your strongest categories; everything past the cut folds into a single <em>Others</em> bar. Drag the slider to choose how many stay in focus.
-      </p>
+      <p class="eyebrow" data-reveal>{number}</p>
+      <h2 data-reveal data-reveal-delay="80">
+        <Fragment set:html={title} />
+        <a class="anchor" href={`#${id}`} aria-label={`Link to ${number}`}>#</a>
+      </h2>
+      <p class="desc" data-reveal data-reveal-delay="160" set:html={description} />
       <div data-reveal data-reveal-delay="240">
-        <a class="view-link" href="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/tree/main/Components/Space-Saving%20Bar%20Chart%20with%20Top%20N%20and%20Others" target="_blank" rel="noopener">
-          View template <span class="arrow">&#8599;</span>
+        <a class="view-link" href="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/201%20-%20Space-Saving%20Bar%20Chart%20with%20Top%20N%20and%20Others%20(Deneb%20Template).md" target="_blank" rel="noopener">
+          {viewLabel} <span class="arrow">&#8599;</span>
         </a>
       </div>
     </div>
     <div class="card" data-space-saving-bar>
       <div class="card-header">
-        <span class="label">Revenue by client &middot; $K</span>
+        <span class="label">{chartLabel}</span>
         <div class="slider-group">
-          <span class="slider-label">Top</span>
+          <span class="slider-label">{extras.t01SliderLabel}</span>
           <input type="range" min="3" max="8" value="6" data-topn-slider />
           <span class="topn-value" data-topn-value>6</span>
         </div>
@@ -44,7 +63,7 @@ const ROWS = [
         </div>
       ))}
       <div class="row others-row" data-others-row>
-        <span class="others-label">Others</span>
+        <span class="others-label">{extras.t01Others}</span>
         <div class="row-track others-track">
           <div class="bar others-bar" data-bar></div>
         </div>
@@ -63,7 +82,6 @@ const ROWS = [
   .t01 {
     position: relative;
     padding: clamp(90px, 14vh, 160px) clamp(24px, 5vw, 48px);
-    background: var(--bg);
   }
   .grid {
     max-width: 1180px;
@@ -88,6 +106,21 @@ const ROWS = [
     line-height: 1.05;
     letter-spacing: -0.015em;
     color: var(--text);
+  }
+  .anchor {
+    margin-left: 0.3em;
+    font-family: var(--font-sans);
+    font-size: 0.42em;
+    font-weight: 600;
+    color: var(--amber);
+    text-decoration: none;
+    vertical-align: 0.35em;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-signature);
+  }
+  .text h2:hover .anchor,
+  .anchor:focus-visible {
+    opacity: 1;
   }
   .text h2 .accent {
     font-style: italic;
@@ -118,7 +151,7 @@ const ROWS = [
     padding-bottom: 7px;
   }
   .card {
-    background: var(--bg-alt);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
     padding: clamp(22px, 3vw, 34px);

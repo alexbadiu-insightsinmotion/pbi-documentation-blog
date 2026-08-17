@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import DocSeries from '../components/docSeries/DocSeries.astro';
+import { seriesCopy } from '../i18n/docSeries';
+import { tmdlDocs, tmdlAssets } from '../components/docSeries/tmdl.ts';
+
+const copy = seriesCopy('en', 'tmdl');
+---
+
+<Base
+  title={copy.title}
+  description={copy.metaDescription(tmdlDocs('en').length, tmdlAssets('en').length)}
+  altHref="/fr/tmdl/"
+>
+  <DocSeries lang="en" series="tmdl" />
+</Base>

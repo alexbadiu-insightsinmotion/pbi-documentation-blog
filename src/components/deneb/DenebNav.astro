@@ -1,0 +1,158 @@
+---
+// Quick-jump rail for the Deneb gallery's 20 full-bleed sections.
+//
+// Why a collapsed tick rail rather than a labelled column like the blog TOC: the
+// gallery's content column is 1180px wide, so a 180px labelled rail needs roughly
+// a 1500px viewport before it stops overlapping charts — which would mean most
+// laptops got no navigator at all. Collapsed to ~20px the ticks live in the
+// section gutter (clamp(24px, 5vw, 48px) = 48px from 960px up) and never touch
+// content; the labels expand over the page on hover or keyboard focus, like a
+// mini-map. Hidden below 960px, matching the site's only breakpoint and the blog
+// TOC's mobile strategy.
+interface NavEntry {
+  num: string;
+  slug: string;
+  /** Already localised by the gallery. */
+  label: string;
+}
+
+interface Props {
+  entries: NavEntry[];
+  label: string;
+}
+const { entries, label } = Astro.props;
+---
+
+<nav class="deneb-nav" aria-label={label} data-deneb-nav>
+  <p class="nav-label">{label}</p>
+  <ul>
+    {entries.map((e) => (
+      <li>
+        <a href={`#${e.slug}`} title={`${e.num} — ${e.label}`} data-deneb-nav-link={e.slug}>
+          <span class="tick" aria-hidden="true"></span>
+          <span class="text">{e.label}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .deneb-nav {
+    display: none;
+  }
+
+  @media (min-width: 960px) {
+    .deneb-nav {
+      display: block;
+      position: fixed;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      /* Below the sticky header (70) so a short viewport tucks it underneath
+         rather than letting it float over the chrome. */
+      z-index: 60;
+      max-height: 70vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 10px 8px;
+      border-radius: var(--card-radius);
+      border: 1px solid transparent;
+      transition:
+        background 0.3s var(--ease-signature),
+        border-color 0.3s var(--ease-signature),
+        box-shadow 0.3s var(--ease-signature);
+      /* Firefox: keep the scrollbar from forcing the collapsed width open. */
+      scrollbar-width: none;
+    }
+    .deneb-nav::-webkit-scrollbar {
+      display: none;
+    }
+    .deneb-nav:hover,
+    .deneb-nav:focus-within {
+      background: var(--bg-alt);
+      border-color: var(--card-border);
+      box-shadow: var(--card-shadow);
+    }
+
+    .nav-label {
+      font: 600 11px/1 var(--font-sans);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin: 0 0 12px;
+      max-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      opacity: 0;
+      transition:
+        max-width 0.4s var(--ease-signature),
+        opacity 0.3s var(--ease-signature);
+    }
+    .deneb-nav:hover .nav-label,
+    .deneb-nav:focus-within .nav-label {
+      max-width: 180px;
+      opacity: 1;
+    }
+
+    .deneb-nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-left: 1px solid var(--card-border);
+    }
+    .deneb-nav a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 2px 0 2px 10px;
+      font-size: 13px;
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color 0.3s var(--ease-signature);
+    }
+    .deneb-nav a:hover {
+      color: var(--gold);
+    }
+
+    /* Collapsed state: the tick is the whole control. */
+    .tick {
+      flex: none;
+      width: 12px;
+      height: 2px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.55;
+      transition:
+        width 0.3s var(--ease-signature),
+        opacity 0.3s var(--ease-signature);
+    }
+    .text {
+      max-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      opacity: 0;
+      transition:
+        max-width 0.4s var(--ease-signature),
+        opacity 0.3s var(--ease-signature);
+    }
+    .deneb-nav:hover .text,
+    .deneb-nav:focus-within .text {
+      max-width: 180px;
+      opacity: 1;
+    }
+
+    /* Active section, set by src/scripts/denebNav.ts */
+    .deneb-nav a[aria-current='true'] {
+      color: var(--gold);
+    }
+    .deneb-nav a[aria-current='true'] .tick {
+      width: 18px;
+      height: 3px;
+      opacity: 1;
+    }
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+// The quiet italic disclaimer that sits at the top of French pages whose body
+// content stays English. Sits in the whitespace above the first section, so it
+// deliberately has no border, background or reveal animation — it should be read
+// once and then ignored.
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+
+<p class="fr-note">{text}</p>
+
+<style>
+  .fr-note {
+    text-align: center;
+    padding: 16px clamp(24px, 5vw, 48px) 0;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--text-sub);
+  }
+</style>

@@ -1,32 +1,43 @@
+---
+interface Props {
+  /** Template count, passed from the registry so it is never hardcoded here. */
+  count: number;
+  /** Localised copy from src/i18n/deneb.ts. */
+  copy: {
+    eyebrow: string;
+    headline: string;
+    lede: string;
+    colA: string;
+    colB: string;
+    statTemplates: string;
+    statThemed: string;
+    statDocumented: string;
+  };
+}
+const { count, copy } = Astro.props;
+---
+
 <section class="intro">
   <div class="wrap">
-    <p class="eyebrow" data-reveal>The idea</p>
-    <h2 class="headline" data-reveal data-reveal-delay="80">
-      Not examples. Not screenshots. <span class="accent">Templates.</span>
-    </h2>
-    <p class="lede" data-reveal data-reveal-delay="120">
-      A curated collection of production-ready Deneb visuals for Power&nbsp;BI, built to be reused, studied, and adapted.
-    </p>
+    <p class="eyebrow" data-reveal>{copy.eyebrow}</p>
+    <h2 class="headline" data-reveal data-reveal-delay="80" set:html={copy.headline} />
+    <p class="lede" data-reveal data-reveal-delay="120" set:html={copy.lede} />
     <div class="two-col">
-      <p data-reveal data-reveal-delay="160">
-        Every template arrives fully formatted, with Power&nbsp;BI theme integration, configurable parameters, and extensive inline documentation.
-      </p>
-      <p data-reveal data-reveal-delay="240">
-        Import, bind your fields, and start from a strong foundation rather than a blank canvas.
-      </p>
+      <p data-reveal data-reveal-delay="160" set:html={copy.colA} />
+      <p data-reveal data-reveal-delay="240" set:html={copy.colB} />
     </div>
     <div class="stats">
       <div data-reveal>
-        <div class="stat-value"><span data-countup data-target="17" data-duration="1800">0</span></div>
-        <div class="stat-label">Reusable templates</div>
+        <div class="stat-value"><span data-countup data-target={count} data-duration="1800">0</span></div>
+        <div class="stat-label">{copy.statTemplates}</div>
       </div>
       <div data-reveal data-reveal-delay="130">
         <div class="stat-value"><span data-countup data-target="100" data-suffix="%" data-duration="1800">0%</span></div>
-        <div class="stat-label">Power&nbsp;BI theme-aware</div>
+        <div class="stat-label" set:html={copy.statThemed} />
       </div>
       <div data-reveal data-reveal-delay="260">
         <div class="stat-value check">&#10003;</div>
-        <div class="stat-label">Fully documented Config &amp; Named&nbsp;Styles</div>
+        <div class="stat-label" set:html={copy.statDocumented} />
       </div>
     </div>
   </div>

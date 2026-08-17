@@ -1,23 +1,37 @@
 ---
+import { bandStyle } from './templates.ts';
+
 interface Props {
   number: string;
+  /** Heading HTML — carries <span class="accent">, so it is set rather than slotted. */
+  title: string;
+  /** Body copy. May contain <em>, hence set:html rather than interpolation. */
   description: string;
   githubHref: string;
-  bg: string;
+  /** Which band this section falls on. The card colour is derived as its inverse. */
+  alt: boolean;
   chartFirst?: boolean;
+  /** Anchor id, so a single template can be linked to and returned to. */
+  id: string;
+  /** "View template" link text, localised. */
+  viewLabel: string;
 }
-const { number, description, githubHref, bg, chartFirst = false } = Astro.props;
+const { number, title, description, githubHref, alt, chartFirst = false, id, viewLabel } =
+  Astro.props;
 ---
 
-<section class="template-section" style={{ background: bg }}>
+<section class="template-section" id={id} style={bandStyle(alt)}>
   <div class="grid">
     <div class="text" style={chartFirst ? { order: 1 } : {}}>
       <p class="eyebrow" data-reveal>{number}</p>
-      <h2 data-reveal data-reveal-delay="80"><slot name="title" /></h2>
-      <p class="desc" data-reveal data-reveal-delay="160">{description}</p>
+      <h2 data-reveal data-reveal-delay="80">
+        <Fragment set:html={title} />
+        <a class="anchor" href={`#${id}`} aria-label={`${viewLabel} — ${number}`}>#</a>
+      </h2>
+      <p class="desc" data-reveal data-reveal-delay="160" set:html={description} />
       <div data-reveal data-reveal-delay="240">
         <a class="view-link" href={githubHref} target="_blank" rel="noopener">
-          View template <span class="arrow">&#8599;</span>
+          {viewLabel} <span class="arrow">&#8599;</span>
         </a>
       </div>
     </div>
@@ -60,6 +74,23 @@ const { number, description, githubHref, bg, chartFirst = false } = Astro.props;
   .text h2 :global(span.accent) {
     font-style: italic;
     color: var(--gold);
+  }
+  /* Hover-revealed deep link. Kept out of the flow's leading edge so it never
+     shifts the heading, and focusable so it is reachable without a pointer. */
+  .anchor {
+    margin-left: 0.3em;
+    font-family: var(--font-sans);
+    font-size: 0.42em;
+    font-weight: 600;
+    color: var(--amber);
+    text-decoration: none;
+    vertical-align: 0.35em;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-signature);
+  }
+  .text h2:hover .anchor,
+  .anchor:focus-visible {
+    opacity: 1;
   }
   .desc {
     margin: 0;

@@ -1,0 +1,304 @@
+---
+// Shared renderer for a numbered documentation series. /tmdl/ and /themes/ have
+// the same shape upstream — a numbered article set plus downloadable assets — so
+// they share one component and differ only in a data file and their copy.
+//
+// Resolving both from (lang, series) here rather than taking a dozen props keeps
+// the four route files down to a Base wrapper each, and makes it impossible for
+// an EN page to be handed FR copy or vice versa.
+//
+// No hand-drawn thumbnails: these are documentation series rather than visual
+// templates, so the article cards carry the number and title and the assets are a
+// compact list.
+import { seriesCopy, type Series } from "../../i18n/docSeries";
+import type { Lang } from "../../i18n/dictionary";
+import { tmdlDocs, tmdlAssets } from "./tmdl.ts";
+import { themeDocs, themeAssets } from "./themes.ts";
+
+interface Props {
+  lang: Lang;
+  series: Series;
+}
+const { lang, series } = Astro.props;
+const copy = seriesCopy(lang, series);
+const docs = series === "tmdl" ? tmdlDocs(lang) : themeDocs(lang);
+const assets = series === "tmdl" ? tmdlAssets(lang) : themeAssets(lang);
+const {
+  label, headline, lede, docsHeading, assetsHeading, assetsLede,
+  assetNoun, statLabel, viewLabel, ctaHref, ctaLabel,
+} = copy;
+---
+
+<section class="intro">
+  <div class="wrap">
+    <p class="eyebrow" data-reveal>{label}</p>
+    <h1 class="headline" data-reveal data-reveal-delay="80" set:html={headline} />
+    <p class="lede" data-reveal data-reveal-delay="160">{lede}</p>
+    <div class="stats">
+      <div data-reveal data-reveal-delay="240">
+        <div class="stat-value">
+          <span data-countup data-target={docs.length} data-duration="1800">0</span>
+        </div>
+        <div class="stat-label">{statLabel}</div>
+      </div>
+      <div data-reveal data-reveal-delay="340">
+        <div class="stat-value">
+          <span data-countup data-target={assets.length} data-duration="1800">0</span>
+        </div>
+        <div class="stat-label">{assetsHeading}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="docs">
+  <div class="wrap">
+    <h2 class="section-heading" data-reveal>{docsHeading}</h2>
+    <div class="card-grid">
+      {docs.map((d, i) => (
+        <a
+          class="doc-card"
+          href={d.href}
+          target="_blank"
+          rel="noopener"
+          data-reveal
+          data-reveal-delay={Math.min(i, 6) * 60}
+        >
+          <span class="card-num">{d.num}</span>
+          <span class="card-title">{d.title}</span>
+          {d.blurb && <span class="card-blurb">{d.blurb}</span>}
+          <span class="card-cta">{viewLabel} <span class="arrow">&#8599;</span></span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="assets">
+  <div class="wrap">
+    <h2 class="section-heading" data-reveal>{assetsHeading}</h2>
+    <p class="section-lede" data-reveal data-reveal-delay="80">{assetsLede}</p>
+    <ul class="asset-list">
+      {assets.map((a, i) => (
+        <li data-reveal data-reveal-delay={Math.min(i, 8) * 45}>
+          <a href={a.href} target="_blank" rel="noopener">
+            <span class="asset-num">{a.num}</span>
+            <span class="asset-title">{a.title}</span>
+            <span class="asset-kind">{assetNoun}</span>
+            <span class="arrow">&#8599;</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="wrap">
+    <div data-reveal>
+      <a class="cta" href={ctaHref} target="_blank" rel="noopener">
+        {ctaLabel} <span class="arrow">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initCountUp } from '../../scripts/countUp';
+  initCountUp();
+</script>
+
+<style>
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font: 600 13px/1 var(--font-sans);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 0 0 26px;
+  }
+  .section-heading {
+    font: 700 clamp(24px, 3vw, 34px)/1.1 var(--font-serif);
+    color: var(--text);
+    margin: 0 0 14px;
+  }
+  .section-lede {
+    margin: 0 0 clamp(28px, 4vh, 44px);
+    max-width: 620px;
+    font-size: clamp(15px, 1.3vw, 18px);
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  /* ── Intro ─────────────────────────────────────────────────────────────── */
+  .intro {
+    background: var(--bg-alt);
+    padding: clamp(80px, 12vh, 150px) clamp(24px, 5vw, 48px);
+  }
+  .headline {
+    margin: 0 0 26px;
+    font-family: var(--font-serif);
+    font-weight: 800;
+    font-size: clamp(36px, 5.4vw, 68px);
+    line-height: 1.03;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .headline :global(.accent) {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .lede {
+    margin: 0;
+    max-width: 700px;
+    font-size: clamp(17px, 1.6vw, 21px);
+    line-height: 1.7;
+    color: var(--text-faint);
+  }
+  .stats {
+    margin-top: clamp(44px, 7vh, 72px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: clamp(24px, 4vw, 48px);
+    max-width: 620px;
+  }
+  .stat-value {
+    font: 700 clamp(38px, 5vw, 56px)/1 var(--font-serif);
+    color: var(--gold);
+  }
+  .stat-label {
+    margin-top: 8px;
+    font: 600 11px/1.4 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+
+  /* ── Articles ──────────────────────────────────────────────────────────── */
+  .docs {
+    background: var(--bg);
+    padding: clamp(80px, 12vh, 140px) clamp(24px, 5vw, 48px);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(20px, 2.5vw, 30px);
+    margin-top: clamp(28px, 4vh, 44px);
+  }
+  .doc-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: clamp(22px, 2.6vw, 30px);
+    background: var(--bg-alt);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    text-decoration: none;
+    transition:
+      transform 0.5s var(--ease-signature),
+      box-shadow 0.5s var(--ease-signature);
+  }
+  .doc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 36px 80px -44px rgba(43, 33, 24, 0.7);
+  }
+  .card-num {
+    font: 600 11px/1 var(--font-sans);
+    letter-spacing: 0.22em;
+    color: var(--amber);
+  }
+  .card-title {
+    font: 700 clamp(18px, 1.7vw, 22px)/1.28 var(--font-serif);
+    color: var(--text);
+  }
+  .card-blurb {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-muted);
+  }
+  .card-cta {
+    margin-top: auto;
+    padding-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font: 600 11px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* ── Downloads ─────────────────────────────────────────────────────────── */
+  .assets {
+    background: var(--bg-alt);
+    padding: clamp(80px, 12vh, 140px) clamp(24px, 5vw, 48px);
+  }
+  .asset-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--card-border);
+  }
+  .asset-list li {
+    border-bottom: 1px solid var(--card-border);
+  }
+  .asset-list a {
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 17px 6px;
+    text-decoration: none;
+    transition: background 0.3s var(--ease-signature);
+  }
+  .asset-list a:hover {
+    background: var(--bg);
+  }
+  .asset-num {
+    font: 600 11px/1 var(--font-sans);
+    letter-spacing: 0.14em;
+    color: var(--amber);
+  }
+  .asset-title {
+    font-size: clamp(15px, 1.3vw, 17px);
+    color: var(--text);
+  }
+  .asset-kind {
+    font: 600 10px/1 var(--font-sans);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-sub);
+  }
+  .asset-list .arrow {
+    font-size: 15px;
+    color: var(--gold);
+  }
+
+  /* ── Closing ───────────────────────────────────────────────────────────── */
+  .closing {
+    background: var(--bg);
+    padding: clamp(70px, 10vh, 120px) clamp(24px, 5vw, 48px) clamp(90px, 13vh, 150px);
+    text-align: center;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 34px;
+    border-radius: 999px;
+    background: linear-gradient(100deg, #a67b45, #b8860b 55%, #c9a227);
+    color: var(--text);
+    font: 700 15px/1 var(--font-sans);
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    box-shadow: 0 20px 46px -20px rgba(184, 134, 11, 0.7);
+  }
+  .cta .arrow {
+    font-size: 17px;
+    font-weight: 400;
+  }
+</style>

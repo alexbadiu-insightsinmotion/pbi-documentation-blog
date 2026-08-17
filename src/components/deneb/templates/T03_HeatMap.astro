@@ -1,20 +1,28 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
 import ImageChartCard from '../ImageChartCard.astro';
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  chartLabel: string;
+  viewLabel: string;
+}
+const { alt, chartFirst, id, number, title, description, chartLabel, viewLabel } = Astro.props;
 ---
 
 <TemplateSection
-  number="03 — Heat map"
-  description="Sales by hour and weekday read as a single matrix, framed by marginal bar and column charts that sum each axis — the busy hours surface on their own."
+  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
   githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/203%20-%20Heat%20Map%20with%20Marginal%20Bar%20and%20Column%20Charts%20(Deneb%20Template).md"
-  bg="var(--bg)"
 >
-  <Fragment slot="title">The week, <span class="accent">by the hour</span></Fragment>
   <ImageChartCard
-    label="Sales · hour × weekday"
+    label={chartLabel}
     src="/assets/templates/tmpl-heatmap.png"
     alt="Heat map Deneb template"
-    cardBg="var(--bg-alt)"
     stagger={14}
   />
 </TemplateSection>

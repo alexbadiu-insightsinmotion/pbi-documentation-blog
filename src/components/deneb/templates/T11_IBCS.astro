@@ -33,15 +33,23 @@ const LEGEND = [
   { color: '#C9A227', label: 'Positive Variance', shape: 'circle' },
   { color: '#5C3A2E', label: 'Negative Variance', shape: 'circle' },
 ];
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  viewLabel: string;
+}
+const { alt, chartFirst, id, number, title, description, viewLabel } = Astro.props;
 ---
 
 <TemplateSection
-  number="11 — IBCS chart"
-  description="Three panels stacked vertically — variance %, variance amount, and actuals vs prior year — follow IBCS notation: lollipop variance dots, signed amount bars with triangle markers, and grouped column bars."
+  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
   githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/211%20-%20IBCS-style%20Performance%20Visual%20(Deneb%20Template).md"
-  bg="var(--bg)"
 >
-  <Fragment slot="title">The <span class="accent">IBCS</span> standard</Fragment>
   <div class="chart-card" data-anim-root data-stagger="80">
     <div class="legend">
       {LEGEND.map((l) => (
@@ -137,7 +145,7 @@ const LEGEND = [
 
 <style>
   .chart-card {
-    background: var(--bg-alt);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
     padding: clamp(16px, 2.5vw, 28px);

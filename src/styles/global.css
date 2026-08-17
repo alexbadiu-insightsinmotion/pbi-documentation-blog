@@ -41,6 +41,17 @@
 
   html { scroll-behavior: smooth; }
 
+  /* The header is sticky at ~62–64px, so without this every anchor jump parks its
+     target underneath it — which the blog TOC has been doing since it shipped.
+     96px matches the TOC's own sticky offset. `section[id]` covers the Deneb
+     gallery's template anchors; no other section on the site carries an id, and
+     any that gained one would want the same behaviour. */
+  section[id],
+  .prose-post h2,
+  .prose-post h3 {
+    scroll-margin-top: 96px;
+  }
+
   body {
     margin: 0;
     background: var(--bg);

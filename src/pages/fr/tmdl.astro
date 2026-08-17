@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import DocSeries from '../../components/docSeries/DocSeries.astro';
+import FrNote from '../../components/FrNote.astro';
+import { seriesCopy } from '../../i18n/docSeries';
+import { t } from '../../i18n/dictionary';
+import { tmdlDocs, tmdlAssets } from '../../components/docSeries/tmdl.ts';
+
+const copy = seriesCopy('fr', 'tmdl');
+---
+
+<Base
+  title={copy.title}
+  description={copy.metaDescription(tmdlDocs('fr').length, tmdlAssets('fr').length)}
+  lang="fr"
+  altHref="/tmdl/"
+>
+  <FrNote text={t('fr').linkedDocsNote} />
+  <DocSeries lang="fr" series="tmdl" />
+</Base>

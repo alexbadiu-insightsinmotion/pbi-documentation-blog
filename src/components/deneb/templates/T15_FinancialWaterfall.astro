@@ -1,20 +1,28 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
 import ImageChartCard from '../ImageChartCard.astro';
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  chartLabel: string;
+  viewLabel: string;
+}
+const { alt, chartFirst, id, number, title, description, chartLabel, viewLabel } = Astro.props;
 ---
 
 <TemplateSection
-  number="15 — Financial waterfall"
-  description="A top-down waterfall walks from gross revenue through every cost line to net profit — EBITDA, depreciation, tax — each step anchored and labeled on a bridge chart."
+  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
   githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/215%20-%20Financial%20Waterfall%20Chart%20(Deneb%20Template).md"
-  bg="var(--bg)"
 >
-  <Fragment slot="title">From revenue <span class="accent">to profit</span></Fragment>
   <ImageChartCard
-    label="P&L bridge · revenue to net profit"
+    label={chartLabel}
     src="/assets/templates/tmpl-financial.png"
     alt="Financial waterfall Deneb template"
-    cardBg="var(--bg-alt)"
     stagger={14}
   />
 </TemplateSection>

@@ -8,7 +8,9 @@ interface Props {
   stagger?: number;
   cardBg?: string;
 }
-const { label, src, alt, stagger = 14, cardBg = 'var(--bg)' } = Astro.props;
+// cardBg defaults to the --card-bg published by the enclosing section, which is
+// always the inverse of that section's band. Pass it explicitly only to opt out.
+const { label, src, alt, stagger = 14, cardBg = 'var(--card-bg)' } = Astro.props;
 ---
 
 <div class="chart-card" data-anim-root data-stagger={stagger} style={{ background: cardBg }}>

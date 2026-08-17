@@ -1,11 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import DenebGallery from '../components/deneb/DenebGallery.astro';
+import { TEMPLATES } from '../components/deneb/templates.ts';
 ---
 
 <Base
   title="Deneb Templates"
-  description="A curated gallery of 17 reusable Deneb (Vega-Lite) custom visual templates for Power BI."
+  description={`A curated gallery of ${TEMPLATES.length} reusable Deneb (Vega-Lite) custom visual templates for Power BI.`}
   altHref="/fr/deneb/"
 >
   <DenebGallery />

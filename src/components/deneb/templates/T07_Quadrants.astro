@@ -1,12 +1,10 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
+import type { DenebExtras } from '../../../i18n/deneb';
 
-const QUADS = [
-  { key: 'Q1', label: 'Stars' },
-  { key: 'Q2', label: 'Question Marks' },
-  { key: 'Q3', label: 'Dogs' },
-  { key: 'Q4', label: 'Cash Cows' },
-];
+// Q1..Q4 are structural keys used by initQuadrants; the human-readable segment
+// names are localised (extras.t07Quads, in registry order Q1..Q4).
+const QUAD_KEYS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 const POINTS = [
   { x: 62, y: 38, r: 8, q: 'Q1', label: 'Meridian' },
@@ -24,20 +22,28 @@ const POINTS = [
 ];
 
 const QUAD_COLOR: Record<string, string> = { Q1: '#C9A227', Q2: '#B8860B', Q3: '#A67B45', Q4: '#D4A843' };
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  viewLabel: string;
+  extras: DenebExtras;
+}
+const { alt, chartFirst, id, number, title, description, viewLabel, extras } = Astro.props;
 ---
 
 <TemplateSection
-  number="07 — Quadrant chart"
-  description="Classic BCG-style scatter, filtered by quadrant — each button sharpens focus so every point in a segment is visible without visual noise from the others."
+  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
   githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/207%20-%20Performance%20Quadrants%20(Deneb%20Template).md"
-  bg="var(--bg)"
-  chartFirst
 >
-  <Fragment slot="title">Four <span class="accent">quadrants</span></Fragment>
   <div class="chart-card" data-quadrants>
     <div class="buttons">
-      {QUADS.map((q) => (
-        <button type="button" class="quad-btn" data-quad-button data-quad={q.key}>{q.key} &mdash; {q.label}</button>
+      {QUAD_KEYS.map((key, qi) => (
+        <button type="button" class="quad-btn" data-quad-button data-quad={key}>{key} &mdash; {extras.t07Quads[qi]}</button>
       ))}
     </div>
     <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" class="quad-svg">
@@ -47,10 +53,10 @@ const QUAD_COLOR: Record<string, string> = { Q1: '#C9A227', Q2: '#B8860B', Q3: '
       <rect x="0" y="0" width="50" height="50" fill="rgba(166,123,69,0.06)" />
       <rect x="0" y="50" width="50" height="50" fill="rgba(43,33,24,0.04)" />
       <rect x="50" y="50" width="50" height="50" fill="rgba(184,134,11,0.06)" />
-      <text x="74" y="6" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">Stars ★</text>
-      <text x="4" y="6" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">Question Marks ?</text>
-      <text x="4" y="97" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">Dogs</text>
-      <text x="70" y="97" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">Cash Cows $</text>
+      <text x="74" y="6" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">{extras.t07Quads[0]} ★</text>
+      <text x="4" y="6" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">{extras.t07Quads[1]} ?</text>
+      <text x="4" y="97" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">{extras.t07Quads[2]}</text>
+      <text x="70" y="97" font-size="3.5" fill="rgba(43,33,24,0.4)" font-family="Inter">{extras.t07Quads[3]} $</text>
       {POINTS.map((p) => (
         <circle
           class="dot"
@@ -74,7 +80,7 @@ const QUAD_COLOR: Record<string, string> = { Q1: '#C9A227', Q2: '#B8860B', Q3: '
 
 <style>
   .chart-card {
-    background: var(--bg-alt);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
     padding: clamp(22px, 3vw, 34px);

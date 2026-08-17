@@ -29,15 +29,23 @@ const TOTAL_H = TOP + DATA.length * ROW_H + 60;
 
 const LEFT_TICKS = [3.0, 3.5, 4.0, 4.5, 5.0];
 const RIGHT_TICKS = [-30, -20, -10, 0, 10, 20, 30];
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  viewLabel: string;
+}
+const { alt, chartFirst, id, number, title, description, viewLabel } = Astro.props;
 ---
 
 <TemplateSection
-  number="10 — Variance analysis"
-  description="Amount variance and percent variance rendered side by side — arrows anchor to the actual value, pointing left or right to signal direction. Diverging percent bars on the right complete the picture."
+  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
   githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/210%20-%20Variance%20Analysis%20(Deneb%20Template).md"
-  bg="var(--bg-alt)"
 >
-  <Fragment slot="title">Every <span class="accent">delta</span></Fragment>
   <div class="chart-card" data-anim-root data-stagger="50">
     <svg viewBox={`0 0 ${RX + RW + 10} ${TOTAL_H}`} class="var-svg">
       <text x={LX + L_ZERO / 2 + 60} y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#41382C" letter-spacing="1">Amount Variance</text>
@@ -112,7 +120,7 @@ const RIGHT_TICKS = [-30, -20, -10, 0, 10, 20, 30];
 
 <style>
   .chart-card {
-    background: var(--bg);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
     padding: clamp(16px, 2.5vw, 28px);

@@ -1,16 +1,25 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  chartLabel: string;
+  viewLabel: string;
+}
+const { alt, chartFirst, id, number, title, description, chartLabel, viewLabel } = Astro.props;
 ---
 
 <TemplateSection
-  number="06 — 2-level column"
-  description="Category columns with clustered sub-category columns overlaid in front, each carrying its own data label — the whole and its parts on one axis."
+  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
   githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/206%20-%202-Level%20Column%20Chart%20(Deneb%20Template).md"
-  bg="var(--bg-alt)"
 >
-  <Fragment slot="title">Two levels, <span class="accent">one column</span></Fragment>
   <div class="chart-card" data-anim-root data-stagger="90">
-    <div class="chart-label">Revenue by region &amp; line</div>
+    <div class="chart-label">{chartLabel}</div>
     <svg viewBox="0 0 600 320" class="col-svg">
       <line x1="40" y1="270" x2="560" y2="270" stroke="rgba(43,33,24,0.14)" stroke-width="1" />
 
@@ -51,7 +60,7 @@ import TemplateSection from '../TemplateSection.astro';
 
 <style>
   .chart-card {
-    background: var(--bg);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
     padding: clamp(22px, 3vw, 34px);

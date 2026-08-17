@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import DocSeries from '../../components/docSeries/DocSeries.astro';
+import FrNote from '../../components/FrNote.astro';
+import { seriesCopy } from '../../i18n/docSeries';
+import { t } from '../../i18n/dictionary';
+import { themeDocs, themeAssets } from '../../components/docSeries/themes.ts';
+
+const copy = seriesCopy('fr', 'themes');
+---
+
+<Base
+  title={copy.title}
+  description={copy.metaDescription(themeDocs('fr').length, themeAssets('fr').length)}
+  lang="fr"
+  altHref="/themes/"
+>
+  <FrNote text={t('fr').linkedDocsNote} />
+  <DocSeries lang="fr" series="themes" />
+</Base>

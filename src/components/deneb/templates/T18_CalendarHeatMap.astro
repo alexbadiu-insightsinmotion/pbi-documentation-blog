@@ -1,0 +1,344 @@
+---
+import { bandStyle } from '../templates.ts';
+import type { DenebExtras } from '../../../i18n/deneb';
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  chartLabel: string;
+  viewLabel: string;
+  extras: DenebExtras;
+}
+// chartFirst is accepted for a uniform gallery contract but unused: like T17 this
+// section is full-bleed and single-column, so there is no side to alternate.
+const { alt, id, number, title, description, chartLabel, viewLabel, extras } = Astro.props;
+
+// ── Geometry ────────────────────────────────────────────────────────────────
+// Derived rather than hand-tuned, following T17's ms2px / G_H convention: change
+// CELL or GAP and every facet, label and the viewBox follow.
+//
+// Sized so the viewBox renders close to 1:1 inside the card (see .cal-inner's
+// max-width). Double faceting is inherently near-square — 21 cells across by 24
+// week-rows down — so letting the SVG stretch to the full card width would blow
+// every font up by ~2.4x and make the section ~1600px tall.
+const CELL = 22;
+const GAP = 4;
+const STEP = CELL + GAP;
+const DOW_H = 18; // weekday-initial header row
+const MONTH_LABEL_H = 22;
+const WEEK_ROWS = 6; // a 31-day month starting Saturday needs 6, not 5
+const MONTH_W = 7 * STEP - GAP;
+const MONTH_H = MONTH_LABEL_H + DOW_H + WEEK_ROWS * STEP;
+
+const Q_LABEL_W = 44; // gutter for the "Q1"/"Q2" row labels
+const COL_GAP = 52;
+const ROW_GAP = 30;
+
+// Two quarters, not four. The full template runs the whole year, but six months
+// is enough to show the double faceting, and it keeps the card a readable
+// landscape block instead of a ~1600px column.
+const Q_ROWS = 2;
+
+const VB_W = Q_LABEL_W + 3 * MONTH_W + 2 * COL_GAP;
+const VB_H = Q_ROWS * MONTH_H + (Q_ROWS - 1) * ROW_GAP;
+
+const monthX = (col: number) => Q_LABEL_W + col * (MONTH_W + COL_GAP);
+const monthY = (row: number) => row * (MONTH_H + ROW_GAP);
+
+// ── Data ────────────────────────────────────────────────────────────────────
+// Hardcoded, never Math.random(): a random fill would reshuffle the heat map on
+// every build, so the page would never look the same twice.
+//
+// `marks` maps a day-of-month to a level 1–3; every unlisted day sits at level 0.
+// That sparseness is the point — a real calendar heat map is mostly quiet ground
+// with a handful of days worth noticing, so colouring every cell strongly would
+// read as noise and destroy the signal.
+const MONTHS: { name: string; days: number; startDow: number; marks: Record<number, number> }[] = [
+  { name: 'January',  days: 31, startDow: 3, marks: { 9: 2, 15: 1, 22: 3, 27: 1 } },
+  { name: 'February', days: 28, startDow: 6, marks: { 5: 1, 11: 2, 17: 3, 22: 1 } },
+  { name: 'March',    days: 31, startDow: 6, marks: { 3: 2, 7: 1, 16: 3, 20: 1, 25: 2 } },
+  { name: 'April',    days: 30, startDow: 2, marks: { 8: 2, 12: 3, 18: 1, 23: 2 } },
+  { name: 'May',      days: 31, startDow: 4, marks: { 7: 1, 13: 2, 16: 3, 23: 1, 27: 1 } },
+  { name: 'June',     days: 30, startDow: 0, marks: { 5: 2, 11: 1, 19: 3, 22: 2, 24: 1 } },
+];
+
+
+// ── Colour scale ────────────────────────────────────────────────────────────
+// The muted tan-to-near-black ramp used by 14 — Correlation matrix, rather than
+// the brighter gold ramp: it keeps the quiet ground genuinely quiet, so the few
+// marked days carry all the weight.
+const LEVELS = [
+  '#E7DCC6', // 0 — unmarked ground
+  '#D2B792', // 1
+  '#A67B45', // 2 — --amber
+  '#2B2118', // 3 — --text, the peak accent
+];
+
+// The legend is built from the same LEVELS as the cells, so the bar can never
+// drift from the scale it describes.
+const LEGEND_GRADIENT = `linear-gradient(90deg, ${LEVELS.join(', ')})`;
+
+// Six legend ticks, matching the source template's tickCount: 6.
+const LEGEND_TICKS = ['0', '40', '80', '120', '160', '200+'];
+
+---
+
+<section class="t18" id={id} style={bandStyle(alt)}>
+  <div class="wrap">
+    <div class="header">
+      <p class="eyebrow" data-reveal>{number}</p>
+      <h2 data-reveal data-reveal-delay="60">
+        <Fragment set:html={title} />
+        <a class="anchor" href={`#${id}`} aria-label={`Link to ${number}`}>#</a>
+      </h2>
+      <p class="sub" data-reveal data-reveal-delay="100" set:html={description} />
+    </div>
+
+    <div class="slicers" data-anim-root data-stagger="90">
+      {extras.t18Slicers.map((s) => (
+        <div class="slicer" data-anim="rise">
+          <span class="slicer-label">{s.label}</span>
+          <span class="slicer-value">{s.value}</span>
+        </div>
+      ))}
+    </div>
+
+    {/* --cal-w carries the viewBox width through to the CSS, so the calendar and
+        its legend stay exactly as wide as the geometry above says they are. */}
+    <div class="chart-card" data-reveal data-reveal-delay="160" style={`--cal-w:${VB_W}px`}>
+      <div class="chart-label" set:html={chartLabel} />
+
+      {/* Stagger is per month group, not per day cell: 12 animations cascading
+          over ~770ms reads as a sweep, where ~370 concurrent ones would be
+          noise — and would be 370 Web Animations for no legibility gain. */}
+      <div class="cal-inner" data-anim-root data-stagger="70">
+        <svg viewBox={`0 0 ${VB_W} ${VB_H}`} class="cal-svg" role="img"
+             aria-label="Calendar heat map: six months of daily values, faceted by quarter and month, with the highest days picked out in darker tones">
+          {Array.from({ length: Q_ROWS }, (_, q) => q).map((q) => (
+            <text
+              x="0"
+              y={monthY(q) + MONTH_LABEL_H + DOW_H + 2 * STEP}
+              font-size="12"
+              font-weight="700"
+              fill="#8A7C68"
+              letter-spacing="0.06em"
+            >
+              {`Q${q + 1}`}
+            </text>
+          ))}
+
+          {MONTHS.map((m, mi) => {
+            const col = mi % 3;
+            const row = Math.floor(mi / 3);
+            const ox = monthX(col);
+            const oy = monthY(row);
+            return (
+              <g data-anim="fade" data-dur="520">
+                <text x={ox} y={oy + 12} font-size="12.5" font-weight="600" fill="#41382C">
+                  {extras.t18Months[mi]}
+                </text>
+
+                {extras.t18Dow.map((d, di) => (
+                  <text
+                    x={ox + di * STEP + CELL / 2}
+                    y={oy + MONTH_LABEL_H + 10}
+                    text-anchor="middle"
+                    font-size="9.5"
+                    fill="#8A7C68"
+                  >
+                    {d}
+                  </text>
+                ))}
+
+                {Array.from({ length: m.days }, (_, i) => i + 1).map((day) => {
+                  const slot = m.startDow + day - 1;
+                  const cx = ox + (slot % 7) * STEP;
+                  const cy = oy + MONTH_LABEL_H + DOW_H + Math.floor(slot / 7) * STEP;
+                  return (
+                    <rect
+                      x={cx}
+                      y={cy}
+                      width={CELL}
+                      height={CELL}
+                      rx="3"
+                      fill={LEVELS[m.marks[day] ?? 0]}
+                    />
+                  );
+                })}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      <div class="legend" data-anim-root>
+        <div class="legend-bar">
+          <span class="legend-fill" data-anim="grow-x" style={{ background: LEGEND_GRADIENT }}></span>
+        </div>
+        <div class="legend-ticks">
+          {LEGEND_TICKS.map((t) => <span>{t}</span>)}
+        </div>
+      </div>
+    </div>
+
+    <div class="source-link" data-reveal>
+      <a
+        href="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/218%20-%20Calendar%20Heat%20Map%20(Deneb%20Template).md"
+        target="_blank"
+        rel="noopener"
+      >
+        {viewLabel} <span class="arrow">&#8599;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .t18 {
+    padding: clamp(60px, 8vw, 120px) clamp(20px, 6vw, 80px);
+  }
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+  .eyebrow {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 0 0 18px;
+  }
+  .header h2 {
+    font: 700 clamp(26px, 3.6vw, 40px)/1.12 var(--font-serif);
+    color: var(--text);
+    margin: 0 0 14px;
+  }
+  .header h2 .accent {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .anchor {
+    margin-left: 0.3em;
+    font-family: var(--font-sans);
+    font-size: 0.42em;
+    font-weight: 600;
+    color: var(--amber);
+    text-decoration: none;
+    vertical-align: 0.35em;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-signature);
+  }
+  .header h2:hover .anchor,
+  .anchor:focus-visible {
+    opacity: 1;
+  }
+  .sub {
+    margin: 0;
+    max-width: 620px;
+    font-size: clamp(15px, 1.3vw, 18px);
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  .slicers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .slicer {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 7px 15px;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    background: var(--card-bg);
+  }
+  .slicer-label {
+    font: 600 10px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+  .slicer-value {
+    font: 600 13px/1 var(--font-sans);
+    color: var(--text);
+  }
+
+  .chart-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(18px, 2.5vw, 30px);
+    box-shadow: var(--card-shadow);
+    overflow-x: auto;
+  }
+  .chart-label {
+    font: 600 11px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+  /* Capped at the viewBox's own width so the SVG never scales past 1:1 — beyond
+     that every label grows with it and the section balloons in height. */
+  .cal-inner,
+  .legend {
+    max-width: var(--cal-w);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cal-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-width: 460px;
+  }
+
+  .legend {
+    margin-top: 26px;
+    min-width: 460px;
+  }
+  .legend-bar {
+    height: 9px;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .legend-fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    border-radius: 999px;
+  }
+  .legend-ticks {
+    margin-top: 7px;
+    display: flex;
+    justify-content: space-between;
+    font: 500 10px/1 var(--font-sans);
+    color: var(--text-sub);
+  }
+
+  .source-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.45);
+    padding-bottom: 7px;
+  }
+  .source-link .arrow {
+    font-size: 15px;
+    font-weight: 400;
+  }
+</style>

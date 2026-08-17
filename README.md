@@ -15,7 +15,11 @@ See `planSite.md` for the wave-by-wave roadmap this site was built against.
 
 `content-manifest.json` (repo root) is the allow-list. Only files listed there are
 ever built as posts — everything else in `PBI-Documentation` (Cheat-Sheet/,
-Components/, Presentations/, templates, etc.) is ignored automatically.
+Components/, Presentations/, templates, etc.) is never turned into a post.
+
+(`Components/` is still *surfaced*, just not as posts: the Deneb gallery, `/tmdl/`
+and `/themes/` link out to it from hand-maintained lists. Nothing under
+`Components/` is ever fetched at build time.)
 
 To publish a new post: add one entry with a `tag` and `author` (both required —
 they're editorial calls that can't be derived from the content), e.g.
@@ -70,10 +74,99 @@ body.
 Contact and Search have full French versions (`/fr/contact/`, `/fr/search/`,
 with their own copy). Search's index (`search-index.json.js`) merges both
 `blog` and `blogFr` collections, so either language's search page can surface
-both — each result links to its own correct language and URL. The Deneb
-gallery has a French chrome version (`/fr/deneb/`) too, but the 17 templates'
-own text stays English (translating that content is out of scope) — a small
-note on that page says so in French. Subscribe stays English-only.
+both — each result links to its own correct language and URL.
+
+**Every page is fully translated**, including the Deneb gallery and the two
+documentation series. Copy lives in three places:
+
+| File                    | Holds                                                  |
+| :---------------------- | :----------------------------------------------------- |
+| `src/i18n/dictionary.ts` | Short chrome strings (nav, footer, Subscribe, labels)  |
+| `src/i18n/deneb.ts`      | Gallery prose — intro, closing, and per-template copy keyed by registry slug, plus the strings drawn inside thumbnails |
+| `src/i18n/docSeries.ts`  | `/tmdl/` and `/themes/` page copy, per series          |
+
+Document and template *titles* are translated; the URLs they point at are not
+(slugs and GitHub hrefs are identical across locales, so a shared link resolves
+the same either way). Three conventions are worth knowing before editing:
+
+- **Technical vocabulary stays English.** Performance Analyzer event names
+  (`Execute DAX Query`, `Query Pending`), DAX/measure names and field names
+  appear as they do in the tooling. Only the prose around them is translated.
+- **The 7 PNG thumbnails have English text baked into the image** and cannot be
+  translated without redrawing them. Their captions are translated; the artwork
+  is not. The 11 inline-SVG thumbnails are fully translated.
+- **FR pages carry a one-line note** (`src/components/FrNote.astro`) saying the
+  linked GitHub documents are in English, since those are not translated.
+
+A missing translation is a build-time error, not a silent English fallback:
+`DenebGallery.astro` throws if a registry slug has no copy for the active locale.
+
+## Pages
+
+| Route                        | Source                                              |
+| :--------------------------- | :-------------------------------------------------- |
+| `/`                          | `index.astro` — hero + post card grid               |
+| `/blog/<slug>/`              | `blog/[slug].astro` from the `blog` collection      |
+| `/deneb/`                    | `DenebGallery.astro` — the template gallery         |
+| `/tmdl/`, `/themes/`         | `DocSeries.astro` + a data file per series          |
+| `/search/`, `/contact/`      | client-side search; contact links                   |
+
+Each has an `/fr/` twin except the blog index (the home page carries it).
+
+## Adding a Deneb template
+
+Two steps, and nothing else needs touching — the count, the display order, the
+alternating background banding, the eyebrow number, the anchor id and the
+navigator entry are all derived from the registry.
+
+1. Add `src/components/deneb/templates/T<NN>_<Name>.astro`. Copy the closest
+   existing one: most templates wrap `TemplateSection.astro` (two-column, chart
+   on one side) and just accept and forward the four gallery props:
+
+   ```astro
+   interface Props { alt: boolean; chartFirst: boolean; id: string; number: string; }
+   const { alt, chartFirst, id, number } = Astro.props;
+   ```
+
+   Full-bleed single-column templates (T01, T17, T18) instead put
+   `style={bandStyle(alt)}` on their own `<section id={id}>`. Either way, any
+   card inside must use `background: var(--card-bg)` — that custom property is
+   published by the section and is always the inverse of its band, which is what
+   keeps the banding correct when the order changes.
+
+2. Append one line to `TEMPLATES` in `src/components/deneb/templates.ts`, in
+   ascending order:
+
+   ```ts
+   { num: '19', slug: 'my-template', Component: T19_MyTemplate },
+   ```
+
+   `slug` is both the anchor (`/deneb/#my-template`) and the copy key, so keep it
+   stable once shipped.
+
+3. Add a matching entry under `templates` in **both** locales in
+   `src/i18n/deneb.ts` — `label`, `title`, `description`, and `chartLabel` if the
+   thumbnail has a caption. `label` is used twice (the eyebrow reads
+   `19 — My template`, the navigator reads `My template`), so there is one place
+   to keep in step. Forgetting a locale fails the build rather than falling back
+   to English.
+
+The gallery renders the registry reversed, so the newest template appears first.
+`chartFirst` is derived from position; set it explicitly in the registry only to
+pin a template whose chart is too tall for its computed side.
+
+## Adding a TMDL or Theme document
+
+One row in `src/components/docSeries/tmdl.ts` or `themes.ts`, carrying the exact
+upstream filename and both locales' titles:
+
+```ts
+{ num: '309', file: '309 - My Doc (TMDL).md', en: 'My doc', fr: 'Mon document' },
+```
+
+`href` is derived from `file` by `sourceHref()`, which handles URL encoding, so
+the two locales cannot end up pointing at different files. `blurb` is optional —
+an editorial upgrade, not a requirement.
 
 ## Commands
 

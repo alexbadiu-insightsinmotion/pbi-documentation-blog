@@ -1,18 +1,26 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
 import ImageChartCard from '../ImageChartCard.astro';
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  chartLabel: string;
+  viewLabel: string;
+}
+const { alt, chartFirst, id, number, title, description, chartLabel, viewLabel } = Astro.props;
 ---
 
 <TemplateSection
-  number="14 — Correlation matrix"
-  description="A symmetric correlation matrix encodes Pearson r in both color saturation and circle size — the strongest relationships emerge at a glance, without reading a single number."
+  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
   githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/214%20-%20Correlation%20Chart%20(Deneb%20Template).md"
-  bg="var(--bg-alt)"
-  chartFirst
 >
-  <Fragment slot="title">Every pair, <span class="accent">measured</span></Fragment>
   <ImageChartCard
-    label="Pearson r · all pairs"
+    label={chartLabel}
     src="/assets/templates/tmpl-correlation.png"
     alt="Correlation matrix Deneb template"
     stagger={14}

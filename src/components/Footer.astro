@@ -20,7 +20,10 @@ const description = lang === 'fr' ? site.descriptionFr : site.description;
 <footer class="footer">
   <div class="col">
     <h3>{dict.footer.contact}</h3>
-    <a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    {/* Points at the Contact page rather than straight out to LinkedIn: both
+        profiles already live there as CTAs, so this is one route to LinkedIn
+        instead of two, and the footer still reaches /contact/. */}
+    <a href={withBase(`${prefix}/contact/`)}>LinkedIn</a>
     {extraSocialLinks.map(([key, url]) => (
       <a href={url} target="_blank" rel="noopener noreferrer">{socialLabels[key] ?? key}</a>
     ))}
@@ -29,7 +32,8 @@ const description = lang === 'fr' ? site.descriptionFr : site.description;
     <h3>{dict.footer.site}</h3>
     <a href={withBase(`${prefix}/`)}>{dict.nav.home}</a>
     <a href={withBase(`${prefix}/deneb/`)}>{dict.nav.deneb}</a>
-    <a href={withBase(`${prefix}/contact/`)}>{dict.nav.contact}</a>
+    <a href={withBase(`${prefix}/tmdl/`)}>{dict.nav.tmdl}</a>
+    <a href={withBase(`${prefix}/themes/`)}>{dict.nav.themes}</a>
   </div>
   <div class="col about">
     <h3>{site.title}</h3>
@@ -38,7 +42,7 @@ const description = lang === 'fr' ? site.descriptionFr : site.description;
   </div>
   <div class="col subscribe-col">
     <h3>{dict.footer.subscribe}</h3>
-    <Subscribe showHeading={false} />
+    <Subscribe showHeading={false} {lang} />
   </div>
 </footer>
 

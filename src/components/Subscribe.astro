@@ -6,23 +6,26 @@
 // Discussion for a freshly published post — no email service, no API key,
 // no account for the site owner to create.
 import { site } from '../site.config';
+import { t, type Lang } from '../i18n/dictionary';
 
 interface Props {
   compact?: boolean;
   showHeading?: boolean;
+  lang?: Lang;
 }
-const { compact = false, showHeading = true } = Astro.props;
+const { compact = false, showHeading = true, lang = 'en' } = Astro.props;
+const copy = t(lang).subscribeBlock;
 ---
 
 <div class:list={['subscribe', { compact }]}>
-  {showHeading && <h3>Get new posts by email</h3>}
-  <p>One click, on GitHub's own notifications — no newsletter, no signup form.</p>
+  {showHeading && <h3>{copy.heading}</h3>}
+  <p>{copy.lede}</p>
   <a class="cta" href={site.watchUrl} target="_blank" rel="noopener noreferrer">
-    Watch this repo &rarr;
+    {copy.cta} &rarr;
   </a>
   <p class="hint">
-    On the page that opens, pick <strong>All Activity</strong> (or Custom &rarr; Discussions).
-    <a href={site.discussionsUrl} target="_blank" rel="noopener noreferrer">How does this work?</a>
+    <Fragment set:html={copy.hint} />
+    <a href={site.discussionsUrl} target="_blank" rel="noopener noreferrer">{copy.how}</a>
   </p>
 </div>
 

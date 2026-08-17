@@ -1,4 +1,22 @@
 ---
+import { bandStyle } from '../templates.ts';
+import type { DenebExtras } from '../../../i18n/deneb';
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  chartLabel: string;
+  viewLabel: string;
+  extras: DenebExtras;
+}
+// chartFirst is accepted for a uniform gallery contract but unused: this section is
+// full-bleed and single-column, so there is no side to alternate.
+const { alt, id, number, title, description, chartLabel, viewLabel, extras } = Astro.props;
+
 const EVENTS: { indent: number; label: string; startMs: number; durMs: number; type: 'heading' | 'parent-bold' | 'parent' | 'exec-task' | 'container' | 'zero-event' }[] = [
   { indent: 0, label: 'VISUAL CONTAINER LIFECYCLE', startMs: 0, durMs: 0, type: 'heading' },
   { indent: 0, label: 'Resolve Parameters', startMs: 0, durMs: 3, type: 'parent' },
@@ -16,12 +34,8 @@ const EVENTS: { indent: number; label: string; startMs: number; durMs: number; t
   { indent: 1, label: 'Visual Update Async', startMs: 207, durMs: 147, type: 'container' },
 ];
 
-const KPIS = [
-  { label: 'Lifecycle Duration', value: '350ms' },
-  { label: 'Model Impact', value: '6%' },
-  { label: 'DAX Impact', value: '3%' },
-  { label: 'Render Impact', value: '45%' },
-  { label: 'Wait Impact', value: '46%' },
+const KPI_VALUES = [
+  '350ms', '6%', '3%', '45%', '46%',
 ];
 
 const TABLE_ROWS = [
@@ -62,24 +76,27 @@ const LEGEND = [
 ];
 ---
 
-<section class="t17">
+<section class="t17" id={id} style={bandStyle(alt)}>
   <div class="wrap">
     <div class="header">
-      <p class="eyebrow" data-reveal>17 — Performance analysis</p>
-      <h2 data-reveal data-reveal-delay="60">Performance Analyzer <span class="accent">export</span></h2>
-      <p class="sub" data-reveal data-reveal-delay="100">Analysis of event duration and decomposition | Single Visual</p>
+      <p class="eyebrow" data-reveal>{number}</p>
+      <h2 data-reveal data-reveal-delay="60">
+        <Fragment set:html={title} />
+        <a class="anchor" href={`#${id}`} aria-label={`Link to ${number}`}>#</a>
+      </h2>
+      <p class="sub" data-reveal data-reveal-delay="100">{extras.t17Sub}</p>
       <p class="sub2" data-reveal data-reveal-delay="120">Sales by Date by Channel</p>
     </div>
 
     <div class="legend" data-reveal data-reveal-delay="140">
-      {LEGEND.map((l) => (
+      {LEGEND.map((l, li) => (
         <div class="legend-item">
           {l.shape === 'di' ? (
             <svg width="10" height="10" class="diamond"><polygon points="5,0 10,5 5,10 0,5" fill={l.color} /></svg>
           ) : (
             <span class="legend-sq" style={{ background: l.color }}></span>
           )}
-          <span>{l.label}</span>
+          <span>{extras.t17Legend[li]}</span>
         </div>
       ))}
     </div>
@@ -132,22 +149,22 @@ const LEGEND = [
     </div>
 
     <div class="kpis">
-      {KPIS.map((k, i) => (
+      {KPI_VALUES.map((value, i) => (
         <div class="kpi-card" data-reveal data-reveal-delay={i * 60}>
-          <div class="kpi-label">{k.label}</div>
-          <div class="kpi-value">{k.value}</div>
+          <div class="kpi-label">{extras.t17Kpis[i]}</div>
+          <div class="kpi-value">{value}</div>
         </div>
       ))}
     </div>
 
     <div class="table-card" data-reveal data-reveal-delay="200">
       <div class="table-header">
-        <span>Event Category</span><span class="center">Count</span><span class="center">Avg (ms)</span><span class="center">Weight</span>
+        {extras.t17TableHead.map((h, i) => (<span class={i === 0 ? undefined : 'center'}>{h}</span>))}
       </div>
-      {TABLE_ROWS.map((row) => (
+      {TABLE_ROWS.map((row, ri) => (
         <div class="table-row">
           <span class="cat-cell">
-            {row.cat}
+            {extras.t17TableCats[ri]}
             <svg width="8" height="8" class="marker"><polygon points="4,0 8,4 4,8 0,4" fill="#8A7C68" /></svg>
           </span>
           <span class="center">{row.count}</span>
@@ -156,13 +173,13 @@ const LEGEND = [
         </div>
       ))}
       <div class="table-footer">
-        <span>Total Session</span><span class="center">11</span><span class="center">350</span><span class="center">100%</span>
+        <span>{extras.t17Total}</span><span class="center">11</span><span class="center">350</span><span class="center">100%</span>
       </div>
     </div>
 
     <div class="source-link" data-reveal>
       <a href="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/217%20-%20Performance%20Analysis%20(Deneb%20Template).md" target="_blank" rel="noreferrer">
-        View template <span class="arrow">&#8599;</span>
+        {viewLabel} <span class="arrow">&#8599;</span>
       </a>
     </div>
   </div>
@@ -170,7 +187,6 @@ const LEGEND = [
 
 <style>
   .t17 {
-    background: var(--bg-alt);
     padding: clamp(60px, 8vw, 120px) clamp(20px, 6vw, 80px);
   }
   .wrap {
@@ -198,6 +214,21 @@ const LEGEND = [
   .header h2 .accent {
     font-style: italic;
     color: var(--gold);
+  }
+  .anchor {
+    margin-left: 0.3em;
+    font-family: var(--font-sans);
+    font-size: 0.42em;
+    font-weight: 600;
+    color: var(--amber);
+    text-decoration: none;
+    vertical-align: 0.35em;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-signature);
+  }
+  .header h2:hover .anchor,
+  .anchor:focus-visible {
+    opacity: 1;
   }
   .sub {
     font: 400 clamp(13px, 1.2vw, 15px)/1.6 var(--font-sans);
@@ -233,7 +264,7 @@ const LEGEND = [
     flex-shrink: 0;
   }
   .gantt-card {
-    background: var(--bg);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
     padding: clamp(16px, 2.5vw, 26px);
@@ -252,7 +283,7 @@ const LEGEND = [
     gap: 14px;
   }
   .kpi-card {
-    background: var(--bg);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
     padding: 18px 20px;
@@ -270,7 +301,7 @@ const LEGEND = [
     color: var(--text);
   }
   .table-card {
-    background: var(--bg);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
     box-shadow: var(--card-shadow);

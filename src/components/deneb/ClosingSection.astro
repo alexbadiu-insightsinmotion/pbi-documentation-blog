@@ -1,20 +1,30 @@
+---
+interface Props {
+  /** Localised copy from src/i18n/deneb.ts. */
+  copy: {
+    eyebrow: string;
+    headline: string;
+    subtitle: string;
+    cta: string;
+    signature: string;
+  };
+}
+const { copy } = Astro.props;
+---
+
 <section class="closing">
   <div class="glow" aria-hidden="true"></div>
-  <p class="eyebrow" data-reveal>Yours to bend</p>
-  <h2 class="headline" data-reveal data-reveal-delay="100">
-    Use these as <span class="accent">starting points</span>.
-  </h2>
-  <p class="subtitle" data-reveal data-reveal-delay="200">
-    Customize freely. Every Config and Named Style is documented and waiting for your fields, your palette, your report.
-  </p>
+  <p class="eyebrow" data-reveal>{copy.eyebrow}</p>
+  <h2 class="headline" data-reveal data-reveal-delay="100" set:html={copy.headline} />
+  <p class="subtitle" data-reveal data-reveal-delay="200">{copy.subtitle}</p>
   <div data-reveal data-reveal-delay="320">
     <a class="cta" href="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/tree/main/Components" target="_blank" rel="noopener">
-      Explore the library on GitHub <span class="arrow">&rarr;</span>
+      {copy.cta} <span class="arrow">&rarr;</span>
     </a>
   </div>
   <div class="signature" data-reveal data-reveal-delay="440">
     <span class="line"></span>
-    <span>Deneb &middot; Refined</span>
+    <span set:html={copy.signature} />
     <span class="line"></span>
   </div>
 </section>

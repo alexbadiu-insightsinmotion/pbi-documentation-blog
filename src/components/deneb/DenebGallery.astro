@@ -1,48 +1,65 @@
 ---
 import IntroSection from './IntroSection.astro';
 import ClosingSection from './ClosingSection.astro';
-import T01_SpaceSavingBar from './templates/T01_SpaceSavingBar.astro';
-import T02_BulletChart from './templates/T02_BulletChart.astro';
-import T03_HeatMap from './templates/T03_HeatMap.astro';
-import T04_RingChart from './templates/T04_RingChart.astro';
-import T05_LinearGauge from './templates/T05_LinearGauge.astro';
-import T06_ColumnChart2Level from './templates/T06_ColumnChart2Level.astro';
-import T07_Quadrants from './templates/T07_Quadrants.astro';
-import T08_ViolinBoxPlot from './templates/T08_ViolinBoxPlot.astro';
-import T09_Regression from './templates/T09_Regression.astro';
-import T10_VarianceAnalysis from './templates/T10_VarianceAnalysis.astro';
-import T11_IBCS from './templates/T11_IBCS.astro';
-import T12_AreaMinMax from './templates/T12_AreaMinMax.astro';
-import T13_Waterfall from './templates/T13_Waterfall.astro';
-import T14_Correlation from './templates/T14_Correlation.astro';
-import T15_FinancialWaterfall from './templates/T15_FinancialWaterfall.astro';
-import T16_Sunburst from './templates/T16_Sunburst.astro';
-import T17_PerfAnalysis from './templates/T17_PerfAnalysis.astro';
+import DenebNav from './DenebNav.astro';
+import { TEMPLATES, eyebrowFor } from './templates.ts';
+import { t, type Lang } from '../../i18n/dictionary';
+import { denebCopy } from '../../i18n/deneb';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const dict = t(lang);
+const copy = denebCopy(lang);
+
+// Newest first. The registry is kept in ascending order because that is how the
+// templates are numbered and released; display order is a presentation choice.
+const ordered = [...TEMPLATES].reverse();
+
+// Banding starts on --bg so it meets IntroSection's --bg-alt cleanly, and with an
+// even number of templates it lands back on --bg-alt to meet ClosingSection's
+// gradient. Both seams stay correct as long as the count stays even — an odd
+// count would double up one band at whichever end.
+const isAlt = (i: number) => i % 2 === 1;
+
+// Copy is resolved here rather than inside each template, so a template component
+// stays a pure visual and every string for a locale comes from one place.
+const entries = ordered.map((entry, i) => {
+  const c = copy.templates[entry.slug];
+  if (!c) throw new Error(`Missing ${lang} Deneb copy for slug "${entry.slug}"`);
+  return {
+    entry,
+    props: {
+      alt: isAlt(i),
+      chartFirst: entry.chartFirst ?? isAlt(i),
+      id: entry.slug,
+      number: eyebrowFor(entry.num, c.label),
+      title: c.title,
+      description: c.description,
+      chartLabel: c.chartLabel,
+      viewLabel: dict.deneb.viewTemplate,
+      extras: copy.extras,
+    },
+    label: c.label,
+  };
+});
 ---
 
-<IntroSection />
-<T01_SpaceSavingBar />
-<T02_BulletChart />
-<T03_HeatMap />
-<T04_RingChart />
-<T05_LinearGauge />
-<T06_ColumnChart2Level />
-<T07_Quadrants />
-<T08_ViolinBoxPlot />
-<T09_Regression />
-<T10_VarianceAnalysis />
-<T11_IBCS />
-<T12_AreaMinMax />
-<T13_Waterfall />
-<T14_Correlation />
-<T15_FinancialWaterfall />
-<T16_Sunburst />
-<T17_PerfAnalysis />
-<ClosingSection />
+<DenebNav
+  entries={entries.map((e) => ({ num: e.entry.num, slug: e.entry.slug, label: e.label }))}
+  label={dict.deneb.navLabel}
+/>
+
+<IntroSection count={TEMPLATES.length} copy={copy.intro} />
+{entries.map(({ entry, props }) => <entry.Component {...props} />)}
+<ClosingSection copy={copy.closing} />
 
 <script>
   import { initChartAnimations } from '../../scripts/chartAnimation';
   import { initCountUp } from '../../scripts/countUp';
+  import { initDenebNav } from '../../scripts/denebNav';
   initChartAnimations();
   initCountUp();
+  initDenebNav();
 </script>

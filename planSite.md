@@ -175,6 +175,7 @@ silently expanding scope.
 - [x] Wave 5 — Deneb gallery section
 - [x] Wave 6 — Bilingual EN/FR
 - [x] Wave 7 — Post-launch corrections (below)
+- [x] Wave 8 — Deneb gallery + site navigation (below)
 
 ## Wave 7 — Post-launch corrections
 
@@ -211,3 +212,153 @@ Feedback after the live site went up:
   for any post not yet in `announced-posts.json`, so GitHub itself emails
   anyone watching. `rss.xml.js` was removed since it existed only to feed
   Buttondown's RSS-to-email import.
+
+## Wave 8 — Deneb gallery + site navigation
+
+Six pieces of reviewer feedback on the live site. Items 2–4 turned out to be one
+problem seen from three sides — a 17-section single-scroll page with no way to
+navigate, cite, or reach its newest content — so they were done as one change.
+
+**Can the gallery be dynamic?** Not fully, and that is worth recording. The
+thumbnails are hand-authored: 10 inline-SVG recreations, 7 PNGs, and now one
+calendar heat map. There is no data source a build step could render from. What
+*was* removed is the per-release busywork around them (see below).
+
+- **Template registry** (`src/components/deneb/templates.ts`): the gallery was a
+  barrel of 17 imports and 17 literal tags, with order encoded twice as JSX
+  source order. Now one entry per template drives display order, the eyebrow
+  number, the anchor id, the navigator entry, the background banding and the
+  count. Adding a template went from "edit five files and bump three hardcoded
+  17s" to one component plus one registry line.
+
+  The load-bearing detail: every template also hardcoded its *card* colour as
+  the inverse of its own band — 17 independent copies of the same invariant, in
+  scoped CSS or via `ImageChartCard`'s `cardBg`. Reversing the order would have
+  left all of them wrong in a way that reads as flat rather than broken. So
+  `bandStyle(alt)` now emits both, publishing the card colour as `--card-bg` for
+  the section to inherit. Banding is alternation-correct end to end, which also
+  fixed the pre-existing T16→T17 seam where two `--bg-alt` bands sat adjacent.
+
+- **Newest first**: the gallery renders the registry reversed, so 18 leads and 01
+  closes. `chartFirst` is derived from position, with a registry override kept as
+  an escape hatch.
+
+- **T18 Calendar Heat Map** (`T18_CalendarHeatMap.astro`): a bespoke full-bleed
+  section like T17, hand-drawn inline SVG on a derived-geometry frontmatter (change
+  `CELL` and every facet, label and the viewBox follow). Shows Q1–Q2 rather than the
+  full year, with a sparse `marks` map so most days sit on quiet ground and only a
+  handful carry colour — a heat map that colours every cell strongly is noise. Uses
+  the muted tan-to-near-black ramp from T14 rather than the brighter gold one, and
+  builds its legend gradient from the same `LEVELS` array as the cells so the two
+  cannot drift. Animation reuses the existing engine: `fade` per month group (6, not
+  per-day — 180 concurrent Web Animations would be waste), `grow-x` on the legend,
+  and `rise` on the slicer chips, the one supported type no template used before.
+
+  The SVG is capped at its own viewBox width via `--cal-w`. Letting it stretch to
+  the card blew every font up 2.4x and made the section ~1600px tall.
+
+- **Anchors** (items 3–4): every template section now emits `id={slug}` with a
+  hover-and-focus-revealed `#` link in the heading. There were previously zero `id`
+  attributes anywhere on the page, so nothing to migrate.
+
+  Fixed a pre-existing bug while here: `scroll-behavior: smooth` plus a ~64px
+  sticky header and no `scroll-margin-top` anywhere meant every anchor jump parked
+  its target under the header — including the blog TOC, which had shipped that way
+  since Wave 6. Two lines in `global.css` now cover both.
+
+- **Navigator rail** (`DenebNav.astro` + `src/scripts/denebNav.ts`): a fixed rail,
+  not a grid column, since the sections are full-bleed bands and a two-column grid
+  would mean restructuring all 20. A labelled 180px rail needs ~1500px of viewport
+  before it stops overlapping the 1180px content column, so it collapses to a
+  ~20px tick column that lives in the section gutter and expands with labels on
+  hover or focus. Hidden below 960px, matching the site's only breakpoint and the
+  blog TOC's mobile strategy; newest-first ordering is what fixes the mobile
+  complaint.
+
+  The scroll-spy is a passive scroll listener, not an IntersectionObserver. Every
+  other observer on the site answers "has this appeared yet?" and disconnects —
+  ideal for observers. "Which section am I in?" is different: an observer only
+  reports changes, so it needs a running set of what is on screen, and that
+  bookkeeping desynchronises on large jumps (deep links, clicking a rail entry far
+  down the page) leaving the rail stuck on a stale entry. It was written that way
+  first and did exactly that. Computing the answer outright is shorter, always
+  right, and mirrors `initScrollProgress()`'s existing listener.
+
+- **`/tmdl/` and `/themes/`** (item 5): item 5 was "add these to the footer", but
+  there were no such pages. Both upstream folders have the same shape — a numbered
+  article series plus downloadable assets — so they share one `DocSeries.astro` and
+  differ only in a data file and copy. TMDL is 9 docs (300–308) + 7 `.txt`; Theme is
+  12 docs (101.1–107) + 14 `.json`. Note the upstream folder is `Theme` singular
+  while the route is `/themes/`, and that `903` exists in *both* folders with
+  different extensions, so any lookup must key on folder plus number.
+
+  Shipped with titles and links only; `blurb` is an optional field so descriptions
+  can be added a line at a time rather than blocking the navigation fixes.
+
+- **Footer** (items 5–6): `[Site]` is now Home / Deneb / TMDL / Themes, and the
+  `[Contact]` column's LinkedIn entry points at `/contact/` — where both profiles
+  already live as CTAs — instead of straight out to LinkedIn. One route to LinkedIn
+  instead of two, and the footer still reaches `/contact/`.
+
+- **Header**: TMDL and Themes added, taking it to 6 links plus the FR pill. The
+  header had no responsive story at all, and `body { overflow-x: hidden }` would
+  have clipped rather than scrolled the overflow. `.header` now wraps before the
+  nav does, so on a phone the nav drops to its own full-width line and takes two
+  rows instead of four.
+
+- Also fixed: T01's "View template" link pointed at
+  `Components/Space-Saving Bar Chart with Top N and Others`, a path that does not
+  exist upstream. Now points at the real `Components/Deneb/201 - …` doc.
+
+**Verification.** 64 routes (was 60). All 18 eyebrows read 18→01 with 18 matching
+`<section id>`; banding alternates with card colours inverse throughout. Cold
+`/deneb/#calendar-heat-map` lands clear of the header with the text revealed.
+Scroll-spy tracks forwards and backwards. Reduced motion renders everything
+instantly. All 60 generated GitHub links were checked against the repo contents
+API — 0 mismatches — and every internal link and in-page anchor across all 64
+pages resolves (1036 links, 602 anchors, 0 broken).
+
+### Wave 8b — Full EN/FR translation
+
+Follow-up in the same wave: the site was bilingual in its chrome but not its
+content. `/fr/deneb/`, `/fr/tmdl/` and `/fr/themes/` carried an "this is
+presented in English" note, and `IntroSection`, `ClosingSection`, `Subscribe` and
+`DocSeries` had English hardcoded in the markup. Roughly 200 strings.
+
+**Change.** Copy moved out of components into three locale modules:
+`src/i18n/dictionary.ts` (chrome), `src/i18n/deneb.ts` (gallery prose, keyed by
+registry slug), `src/i18n/docSeries.ts` (the two series' page copy). Template
+components became pure visuals that receive `title` / `description` /
+`chartLabel` / `viewLabel` as props, resolved once in `DenebGallery` — so a
+template no longer contains any user-facing string. `DocSeries` now takes only
+`(lang, series)` and resolves copy and data itself, which collapsed the four
+route files to a `Base` wrapper each.
+
+A missing translation is a build error, not a silent English fallback: the
+gallery throws if a registry slug has no copy for the active locale.
+
+Three conventions, all deliberate:
+
+- **Titles are translated, URLs are not.** Slugs and GitHub hrefs are identical
+  across locales — verified: `/tmdl/` and `/fr/tmdl/` emit byte-identical link
+  sets (17 each), as do themes (27) and deneb (19) — so a shared link resolves
+  the same either way and the anchor `#calendar-heat-map` works from both.
+- **Technical vocabulary stays English.** Performance Analyzer event names,
+  DAX/measure names and field names appear as they do in the tooling and in the
+  source template; only the prose around them moves. The doc-series data files
+  keep one row per upstream file with both titles on it, so the two locales
+  cannot drift apart by count or point at different files.
+- **Chart-type names** are translated where French BI usage has a settled term
+  (`Cascade`, `Matrice de corrélation`, `Segments` for slicers) and kept where the
+  English term *is* the French usage (`Sunburst`, `IBCS`, `Top N`).
+
+**Known limit, worth stating plainly:** the 7 PNG thumbnails have English text
+baked into the image. Their captions are translated; the artwork is not, and
+cannot be without redrawing all seven. The 11 inline-SVG thumbnails are fully
+translated, including T18's month names and weekday initials (shown D L M M J V S
+for a Sunday-start week) and T07's BCG segment names.
+
+**Verification.** A sweep of all 6 FR chrome pages against 45 known English
+strings returns 0 leaks, while the technical labels that should remain English are
+all still present. Link parity confirmed as above; the full link audit re-ran
+unchanged (1036 internal, 602 anchors, 190 repo links, 0 regressions).

@@ -6,15 +6,23 @@ const RINGS = [
   { color: '#B8860B', label: 'Engagement', val: '62%' },
   { color: '#A67B45', label: 'Retention', val: '45%' },
 ];
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  viewLabel: string;
+}
+const { alt, chartFirst, id, number, title, description, viewLabel } = Astro.props;
 ---
 
 <TemplateSection
-  number="04 — Ring chart"
-  description="Three concentric rings, each a share of 100% — nested KPIs that read at a glance, without a single legend cluttering the frame."
+  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
   githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/204%20-%20Ring%20Chart%20(Deneb%20Template).md"
-  bg="var(--bg-alt)"
 >
-  <Fragment slot="title">Three <span class="accent">rings</span></Fragment>
   <div class="chart-card" data-anim-root data-stagger="180">
     <svg viewBox="0 0 320 320" class="ring-svg">
       <circle cx="160" cy="160" r="138" fill="none" stroke="rgba(43,33,24,0.06)" stroke-width="24" />
@@ -38,7 +46,7 @@ const RINGS = [
 
 <style>
   .chart-card {
-    background: var(--bg);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
     padding: clamp(22px, 3vw, 34px);
