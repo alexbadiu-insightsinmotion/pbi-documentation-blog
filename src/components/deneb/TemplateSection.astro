@@ -1,5 +1,7 @@
 ---
 import { bandStyle } from './templates.ts';
+import TemplateLinks from './TemplateLinks.astro';
+import type { TemplateLink } from './templates.ts';
 
 interface Props {
   number: string;
@@ -7,17 +9,29 @@ interface Props {
   title: string;
   /** Body copy. May contain <em>, hence set:html rather than interpolation. */
   description: string;
-  githubHref: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  /** Caption above the JSON links, for templates that ship variants. */
+  jsonLabel: string;
+  /** Localised prefix for the heading permalink. */
+  anchorLabel: string;
   /** Which band this section falls on. The card colour is derived as its inverse. */
   alt: boolean;
   chartFirst?: boolean;
   /** Anchor id, so a single template can be linked to and returned to. */
   id: string;
-  /** "View template" link text, localised. */
-  viewLabel: string;
 }
-const { number, title, description, githubHref, alt, chartFirst = false, id, viewLabel } =
-  Astro.props;
+const {
+  number,
+  title,
+  description,
+  links,
+  jsonLabel,
+  anchorLabel,
+  alt,
+  chartFirst = false,
+  id,
+} = Astro.props;
 ---
 
 <section class="template-section" id={id} style={bandStyle(alt)}>
@@ -26,13 +40,11 @@ const { number, title, description, githubHref, alt, chartFirst = false, id, vie
       <p class="eyebrow" data-reveal>{number}</p>
       <h2 data-reveal data-reveal-delay="80">
         <Fragment set:html={title} />
-        <a class="anchor" href={`#${id}`} aria-label={`${viewLabel} — ${number}`}>#</a>
+        <a class="anchor" href={`#${id}`} aria-label={`${anchorLabel} ${number}`}>#</a>
       </h2>
       <p class="desc" data-reveal data-reveal-delay="160" set:html={description} />
       <div data-reveal data-reveal-delay="240">
-        <a class="view-link" href={githubHref} target="_blank" rel="noopener">
-          {viewLabel} <span class="arrow">&#8599;</span>
-        </a>
+        <TemplateLinks {links} {jsonLabel} />
       </div>
     </div>
     <div class="chart" style={chartFirst ? { order: 0 } : {}}>
@@ -102,22 +114,5 @@ const { number, title, description, githubHref, alt, chartFirst = false, id, vie
   .desc :global(em) {
     font-style: normal;
     color: var(--gold);
-  }
-  .view-link {
-    margin-top: 30px;
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    font: 600 12px/1 var(--font-sans);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--gold);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(184, 134, 11, 0.45);
-    padding-bottom: 7px;
-  }
-  .view-link .arrow {
-    font-size: 15px;
-    font-weight: 400;
   }
 </style>

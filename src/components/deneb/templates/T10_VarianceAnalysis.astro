@@ -1,5 +1,6 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
+import type { TemplateLink } from '../templates.ts';
 
 const DATA = [
   { name: 'Product 1', act: 4.3, varM: 0.8, varP: 25.5 },
@@ -37,14 +38,16 @@ interface Props {
   number: string;
   title: string;
   description: string;
-  viewLabel: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  jsonLabel: string;
+  anchorLabel: string;
 }
-const { alt, chartFirst, id, number, title, description, viewLabel } = Astro.props;
+const { alt, chartFirst, id, number, title, description, links, jsonLabel, anchorLabel } = Astro.props;
 ---
 
 <TemplateSection
-  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
-  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/210%20-%20Variance%20Analysis%20(Deneb%20Template).md"
+  {...{ alt, chartFirst, id, number, title, description, links, jsonLabel, anchorLabel }}
 >
   <div class="chart-card" data-anim-root data-stagger="50">
     <svg viewBox={`0 0 ${RX + RW + 10} ${TOTAL_H}`} class="var-svg">

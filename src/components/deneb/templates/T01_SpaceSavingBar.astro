@@ -1,5 +1,7 @@
 ---
 import { bandStyle } from '../templates.ts';
+import type { TemplateLink } from '../templates.ts';
+import TemplateLinks from '../TemplateLinks.astro';
 import type { DenebExtras } from '../../../i18n/deneb';
 
 const ROWS = [
@@ -21,12 +23,15 @@ interface Props {
   title: string;
   description: string;
   chartLabel: string;
-  viewLabel: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  jsonLabel: string;
+  anchorLabel: string;
   extras: DenebExtras;
 }
 // chartFirst is accepted for a uniform gallery contract but unused: this section
 // owns its own two-column grid and is always text-left.
-const { alt, id, number, title, description, chartLabel, viewLabel, extras } = Astro.props;
+const { alt, id, number, title, description, chartLabel, links, jsonLabel, anchorLabel, extras } = Astro.props;
 ---
 
 <section class="t01" id={id} style={bandStyle(alt)}>
@@ -35,13 +40,11 @@ const { alt, id, number, title, description, chartLabel, viewLabel, extras } = A
       <p class="eyebrow" data-reveal>{number}</p>
       <h2 data-reveal data-reveal-delay="80">
         <Fragment set:html={title} />
-        <a class="anchor" href={`#${id}`} aria-label={`Link to ${number}`}>#</a>
+        <a class="anchor" href={`#${id}`} aria-label={`${anchorLabel} ${number}`}>#</a>
       </h2>
       <p class="desc" data-reveal data-reveal-delay="160" set:html={description} />
       <div data-reveal data-reveal-delay="240">
-        <a class="view-link" href="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/201%20-%20Space-Saving%20Bar%20Chart%20with%20Top%20N%20and%20Others%20(Deneb%20Template).md" target="_blank" rel="noopener">
-          {viewLabel} <span class="arrow">&#8599;</span>
-        </a>
+        <TemplateLinks {links} {jsonLabel} />
       </div>
     </div>
     <div class="card" data-space-saving-bar>
@@ -136,19 +139,6 @@ const { alt, id, number, title, description, chartLabel, viewLabel, extras } = A
   .desc em {
     font-style: normal;
     color: var(--gold);
-  }
-  .view-link {
-    margin-top: 30px;
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    font: 600 12px/1 var(--font-sans);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--gold);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(184, 134, 11, 0.45);
-    padding-bottom: 7px;
   }
   .card {
     background: var(--card-bg);

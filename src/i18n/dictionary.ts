@@ -18,13 +18,19 @@ export const dictionary = {
     deneb: {
       navLabel: 'Templates',
       viewTemplate: 'View template',
+      templateJson: 'Template JSON',
+      // Prefix for a heading's '#' permalink, e.g. 'Link to 04 — Ring chart'.
+      anchorLabel: 'Link to',
+      // Alt text for the 7 PNG thumbnails, built from the template's own label so
+      // it stays translated and cannot drift from the caption beside it.
+      thumbAlt: (label: string) => 'Deneb template: ' + label,
     },
     // Rendered on FR pages only. The page copy is translated; the GitHub
     // documents it links out to are not, which is what this says.
     linkedDocsNote: 'The linked documents are in English.',
     subscribeBlock: {
       heading: 'Get new posts by email',
-      lede: "One click, on GitHub's own notifications — no newsletter, no signup form.",
+      lede: "One click, through GitHub's own notifications. No newsletter and no signup form.",
       cta: 'Watch this repo',
       hint: 'On the page that opens, pick <strong>All Activity</strong> (or Custom &rarr; Discussions).',
       how: 'How does this work?',
@@ -52,11 +58,14 @@ export const dictionary = {
     deneb: {
       navLabel: 'Templates',
       viewTemplate: 'Voir le template',
+      templateJson: 'JSON du template',
+      anchorLabel: 'Lien vers',
+      thumbAlt: (label: string) => 'Template Deneb : ' + label,
     },
     linkedDocsNote: 'Les documents liés sont en anglais.',
     subscribeBlock: {
       heading: 'Recevoir les nouveaux articles par e-mail',
-      lede: 'Un clic, via les notifications GitHub — pas de newsletter, pas de formulaire.',
+      lede: 'Un clic, via les notifications GitHub. Pas de newsletter, pas de formulaire.',
       cta: 'Suivre ce dépôt',
       hint: 'Sur la page qui s’ouvre, choisissez <strong>All Activity</strong> (ou Custom &rarr; Discussions).',
       how: 'Comment cela fonctionne&nbsp;?',

@@ -1,5 +1,7 @@
 ---
 import { bandStyle } from '../templates.ts';
+import type { TemplateLink } from '../templates.ts';
+import TemplateLinks from '../TemplateLinks.astro';
 import type { DenebExtras } from '../../../i18n/deneb';
 
 interface Props {
@@ -9,13 +11,15 @@ interface Props {
   number: string;
   title: string;
   description: string;
-  chartLabel: string;
-  viewLabel: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  jsonLabel: string;
+  anchorLabel: string;
   extras: DenebExtras;
 }
 // chartFirst is accepted for a uniform gallery contract but unused: this section is
 // full-bleed and single-column, so there is no side to alternate.
-const { alt, id, number, title, description, chartLabel, viewLabel, extras } = Astro.props;
+const { alt, id, number, title, description, links, jsonLabel, anchorLabel, extras } = Astro.props;
 
 const EVENTS: { indent: number; label: string; startMs: number; durMs: number; type: 'heading' | 'parent-bold' | 'parent' | 'exec-task' | 'container' | 'zero-event' }[] = [
   { indent: 0, label: 'VISUAL CONTAINER LIFECYCLE', startMs: 0, durMs: 0, type: 'heading' },
@@ -82,7 +86,7 @@ const LEGEND = [
       <p class="eyebrow" data-reveal>{number}</p>
       <h2 data-reveal data-reveal-delay="60">
         <Fragment set:html={title} />
-        <a class="anchor" href={`#${id}`} aria-label={`Link to ${number}`}>#</a>
+        <a class="anchor" href={`#${id}`} aria-label={`${anchorLabel} ${number}`}>#</a>
       </h2>
       <p class="sub" data-reveal data-reveal-delay="100">{extras.t17Sub}</p>
       <p class="sub2" data-reveal data-reveal-delay="120">Sales by Date by Channel</p>
@@ -178,9 +182,7 @@ const LEGEND = [
     </div>
 
     <div class="source-link" data-reveal>
-      <a href="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/217%20-%20Performance%20Analysis%20(Deneb%20Template).md" target="_blank" rel="noreferrer">
-        {viewLabel} <span class="arrow">&#8599;</span>
-      </a>
+      <TemplateLinks {links} {jsonLabel} align="end" offsetTop={false} />
     </div>
   </div>
 </section>
@@ -352,17 +354,5 @@ const LEGEND = [
   .source-link {
     display: flex;
     justify-content: flex-end;
-  }
-  .source-link a {
-    font: 600 12px/1 var(--font-sans);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--gold);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    border-bottom: 1px solid rgba(184, 134, 11, 0.45);
-    padding-bottom: 7px;
   }
 </style>

@@ -1,5 +1,6 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
+import type { TemplateLink } from '../templates.ts';
 
 interface Props {
   alt: boolean;
@@ -9,14 +10,16 @@ interface Props {
   title: string;
   description: string;
   chartLabel: string;
-  viewLabel: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  jsonLabel: string;
+  anchorLabel: string;
 }
-const { alt, chartFirst, id, number, title, description, chartLabel, viewLabel } = Astro.props;
+const { alt, chartFirst, id, number, title, description, chartLabel, links, jsonLabel, anchorLabel } = Astro.props;
 ---
 
 <TemplateSection
-  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
-  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/208%20-%20Violin%20Plot%20with%20Box%20Plot%20(Deneb%20Template).md"
+  {...{ alt, chartFirst, id, number, title, description, links, jsonLabel, anchorLabel }}
 >
   <div class="chart-card" data-anim-root data-stagger="100">
     <div class="chart-label">{chartLabel}</div>

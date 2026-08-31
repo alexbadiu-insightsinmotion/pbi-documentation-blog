@@ -1,5 +1,6 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
+import type { TemplateLink } from '../templates.ts';
 
 const PRODS = ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5', 'Product 6', 'Product 7'];
 const PY = [1370, 1460, 1650, 1600, 1590, 2200, 1280];
@@ -41,14 +42,16 @@ interface Props {
   number: string;
   title: string;
   description: string;
-  viewLabel: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  jsonLabel: string;
+  anchorLabel: string;
 }
-const { alt, chartFirst, id, number, title, description, viewLabel } = Astro.props;
+const { alt, chartFirst, id, number, title, description, links, jsonLabel, anchorLabel } = Astro.props;
 ---
 
 <TemplateSection
-  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
-  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/211%20-%20IBCS-style%20Performance%20Visual%20(Deneb%20Template).md"
+  {...{ alt, chartFirst, id, number, title, description, links, jsonLabel, anchorLabel }}
 >
   <div class="chart-card" data-anim-root data-stagger="80">
     <div class="legend">

@@ -1,0 +1,116 @@
+---
+// The outbound links on a template card, in one place.
+//
+// Previously each of the 18 template components inlined its own anchor, and the
+// three full-bleed sections had already drifted: T17 used rel="noreferrer" where
+// every other link used noopener, and T01/T17/T18 hardcoded an English aria-label
+// on the heading permalink. Adding a second link per card would have doubled that,
+// so the anchors moved here and the hrefs moved into the registry.
+import type { TemplateLink } from './templates.ts';
+
+interface Props {
+  /** Resolved in DenebGallery: the article first, then its template JSON(s). */
+  links: TemplateLink[];
+  /** Caption for the JSON block, shown only when a template ships variants. */
+  jsonLabel: string;
+  /** The two full-bleed sections (T17, T18) right-align their link row. */
+  align?: 'start' | 'end';
+  /** False where the caller already owns the spacing above the links. */
+  offsetTop?: boolean;
+}
+const { links, jsonLabel, align = 'start', offsetTop = true } = Astro.props;
+
+const primary = links.find((l) => l.primary) ?? links[0];
+const variants = links.filter((l) => l !== primary);
+---
+
+<div class="tpl-links" data-align={align} data-offset={offsetTop ? 'true' : 'false'}>
+  <a class="view-link" href={primary.href} target="_blank" rel="noopener">
+    {primary.label} <span class="arrow">&#8599;</span>
+  </a>
+  {variants.length > 0 && (
+    <div class="json-block">
+      {/* The caption carries the meaning when the labels are bare variant names
+          ("Option 1", "Single visual"); a lone JSON needs no introduction. */}
+      {variants.length > 1 && <span class="json-caption">{jsonLabel}</span>}
+      <div class="json-row">
+        {variants.map((l) => (
+          <a class="json-link" href={l.href} target="_blank" rel="noopener">
+            {l.label} <span class="arrow">&#8599;</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .tpl-links {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: flex-start;
+  }
+  .tpl-links[data-align='end'] {
+    align-items: flex-end;
+  }
+  .tpl-links[data-offset='true'] {
+    margin-top: 30px;
+  }
+  .view-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.45);
+    padding-bottom: 7px;
+  }
+  .json-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: inherit;
+  }
+  .json-caption {
+    font: 600 10px/1 var(--font-sans);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-sub);
+  }
+  .json-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    align-items: inherit;
+  }
+  .tpl-links[data-align='end'] .json-row {
+    justify-content: flex-end;
+  }
+  /* Deliberately quieter than .view-link: the article is the primary route in,
+     the raw JSON is for someone who already knows they want to import it. */
+  .json-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font: 500 12px/1 var(--font-sans);
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.3s var(--ease-signature);
+  }
+  .json-link:hover,
+  .json-link:focus-visible {
+    color: var(--gold);
+  }
+  .arrow {
+    font-size: 15px;
+    font-weight: 400;
+  }
+  .json-link .arrow {
+    font-size: 13px;
+  }
+</style>

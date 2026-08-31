@@ -1,5 +1,6 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
+import type { TemplateLink } from '../templates.ts';
 
 const SCATTER = [
   [80, 62], [155, 98], [200, 145], [260, 168], [90, 82], [310, 205], [140, 115], [230, 152],
@@ -14,14 +15,16 @@ interface Props {
   title: string;
   description: string;
   chartLabel: string;
-  viewLabel: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  jsonLabel: string;
+  anchorLabel: string;
 }
-const { alt, chartFirst, id, number, title, description, chartLabel, viewLabel } = Astro.props;
+const { alt, chartFirst, id, number, title, description, chartLabel, links, jsonLabel, anchorLabel } = Astro.props;
 ---
 
 <TemplateSection
-  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
-  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/209%20-%20Regression%20(Deneb%20Template).md"
+  {...{ alt, chartFirst, id, number, title, description, links, jsonLabel, anchorLabel }}
 >
   <div class="chart-card" data-anim-root data-stagger="60">
     <div class="chart-label">{chartLabel}</div>

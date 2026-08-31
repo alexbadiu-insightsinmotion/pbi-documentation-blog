@@ -1,5 +1,6 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
+import type { TemplateLink } from '../templates.ts';
 import ImageChartCard from '../ImageChartCard.astro';
 
 interface Props {
@@ -10,19 +11,23 @@ interface Props {
   title: string;
   description: string;
   chartLabel: string;
-  viewLabel: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  jsonLabel: string;
+  /** Localised thumbnail alt text, built from the template label. */
+  imageAlt: string;
+  anchorLabel: string;
 }
-const { alt, chartFirst, id, number, title, description, chartLabel, viewLabel } = Astro.props;
+const { alt, chartFirst, id, number, title, description, chartLabel, links, jsonLabel, anchorLabel, imageAlt } = Astro.props;
 ---
 
 <TemplateSection
-  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
-  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/214%20-%20Correlation%20Chart%20(Deneb%20Template).md"
+  {...{ alt, chartFirst, id, number, title, description, links, jsonLabel, anchorLabel }}
 >
   <ImageChartCard
     label={chartLabel}
     src="/assets/templates/tmpl-correlation.png"
-    alt="Correlation matrix Deneb template"
+    alt={imageAlt}
     stagger={14}
   />
 </TemplateSection>

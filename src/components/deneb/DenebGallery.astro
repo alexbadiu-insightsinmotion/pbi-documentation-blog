@@ -2,7 +2,8 @@
 import IntroSection from './IntroSection.astro';
 import ClosingSection from './ClosingSection.astro';
 import DenebNav from './DenebNav.astro';
-import { TEMPLATES, eyebrowFor } from './templates.ts';
+import { TEMPLATES, eyebrowFor, upstreamHref } from './templates.ts';
+import type { TemplateLink } from './templates.ts';
 import { t, type Lang } from '../../i18n/dictionary';
 import { denebCopy } from '../../i18n/deneb';
 
@@ -28,6 +29,26 @@ const isAlt = (i: number) => i % 2 === 1;
 const entries = ordered.map((entry, i) => {
   const c = copy.templates[entry.slug];
   if (!c) throw new Error(`Missing ${lang} Deneb copy for slug "${entry.slug}"`);
+
+  // A template that ships variants needs a name for each, or its links render as
+  // several identical "Template JSON" rows. Same contract as the copy above: a
+  // missing one is a build error, not a silent fallback.
+  const variants = c.jsonLabels ?? [];
+  if (entry.json.length > 1 && variants.length !== entry.json.length) {
+    throw new Error(
+      `Deneb template "${entry.slug}" has ${entry.json.length} template JSONs but ` +
+        `${variants.length} ${lang} jsonLabels`
+    );
+  }
+
+  const links: TemplateLink[] = [
+    { href: upstreamHref(entry.doc), label: dict.deneb.viewTemplate, primary: true },
+    ...entry.json.map((file, j) => ({
+      href: upstreamHref(file),
+      label: variants[j] ?? dict.deneb.templateJson,
+    })),
+  ];
+
   return {
     entry,
     props: {
@@ -38,7 +59,10 @@ const entries = ordered.map((entry, i) => {
       title: c.title,
       description: c.description,
       chartLabel: c.chartLabel,
-      viewLabel: dict.deneb.viewTemplate,
+      links,
+      jsonLabel: dict.deneb.templateJson,
+      imageAlt: dict.deneb.thumbAlt(c.label),
+      anchorLabel: dict.deneb.anchorLabel,
       extras: copy.extras,
     },
     label: c.label,

@@ -1,5 +1,6 @@
 ---
 import TemplateSection from '../TemplateSection.astro';
+import type { TemplateLink } from '../templates.ts';
 import type { DenebExtras } from '../../../i18n/deneb';
 
 // Q1..Q4 are structural keys used by initQuadrants; the human-readable segment
@@ -30,15 +31,17 @@ interface Props {
   number: string;
   title: string;
   description: string;
-  viewLabel: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  jsonLabel: string;
+  anchorLabel: string;
   extras: DenebExtras;
 }
-const { alt, chartFirst, id, number, title, description, viewLabel, extras } = Astro.props;
+const { alt, chartFirst, id, number, title, description, links, jsonLabel, anchorLabel, extras } = Astro.props;
 ---
 
 <TemplateSection
-  {...{ alt, chartFirst, id, number, title, description, viewLabel }}
-  githubHref="https://github.com/alexbadiu-insightsinmotion/PBI-Documentation/blob/main/Components/Deneb/207%20-%20Performance%20Quadrants%20(Deneb%20Template).md"
+  {...{ alt, chartFirst, id, number, title, description, links, jsonLabel, anchorLabel }}
 >
   <div class="chart-card" data-quadrants>
     <div class="buttons">

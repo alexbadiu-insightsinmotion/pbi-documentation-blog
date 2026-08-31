@@ -4,9 +4,9 @@ export const site = {
   wordmark: { main: 'PBI', accent: 'Documentation' },
   tagline: 'Power BI documentation, refined.',
   description:
-    'Practical writing on documenting Power BI projects — design documents, PBIR annotations, translytical task flows, and the tooling around them.',
+    'Practical writing on documenting Power BI projects: design documents, PBIR annotations, translytical task flows, and the tooling around them.',
   descriptionFr:
-    'Des articles pratiques sur la documentation des projets Power BI — documents de conception, annotations PBIR, translytical task flows, et les outils qui vont avec.',
+    'Des articles pratiques sur la documentation des projets Power BI : documents de conception, annotations PBIR, translytical task flows, et les outils qui vont avec.',
   author: 'Alexandru Badiu',
   githubRepo: 'https://github.com/alexbadiu-insightsinmotion/PBI-Documentation',
   // Subscribe's primary action: goes straight to this repo's notification
