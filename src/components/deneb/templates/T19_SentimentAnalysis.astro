@@ -1,0 +1,373 @@
+---
+import { bandStyle } from '../templates.ts';
+import type { TemplateLink } from '../templates.ts';
+import TemplateLinks from '../TemplateLinks.astro';
+import type { DenebExtras } from '../../../i18n/deneb';
+
+interface Props {
+  alt: boolean;
+  chartFirst: boolean;
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  chartLabel: string;
+  /** Article plus template JSON(s), resolved in DenebGallery. */
+  links: TemplateLink[];
+  jsonLabel: string;
+  anchorLabel: string;
+  extras: DenebExtras;
+}
+// chartFirst is accepted for a uniform gallery contract but unused: like T17 and
+// T18 this section is full-bleed and single-column. A ±100 diverging chart with a
+// neutral panel beside it is inherently wide; squeezed into half a column, every
+// label dropped to ~7px.
+const { alt, id, number, title, description, chartLabel, links, jsonLabel, anchorLabel, extras } = Astro.props;
+const [negLabel, posLabel, neuLabel] = extras.t19Classes;
+
+// Survey responses per category, as percentages of that category's answers.
+// Class totals (negative / neutral / positive) are the ones shown on the upstream
+// 219 title image; the per-choice splits are illustrative and sum to them.
+// Choice order runs extreme → middle on each side: neg[0] is "Strongly disagree",
+// pos[0] is "Strongly agree".
+const DATA = [
+  { neg: [7, 6, 5], neu: 3, pos: [29, 32, 18] },
+  { neg: [8, 5, 3], neu: 3, pos: [40, 31, 10] },
+  { neg: [4, 3, 3], neu: 4, pos: [36, 35, 15] },
+  { neg: [10, 8, 5], neu: 5, pos: [23, 29, 20] },
+  { neg: [7, 7, 6], neu: 5, pos: [27, 31, 17] },
+  { neg: [14, 10, 9], neu: 9, pos: [16, 21, 21] },
+];
+const sum = (a: number[]) => a.reduce((s, v) => s + v, 0);
+
+// The hovered segment the custom tooltip card is drawn for: Location, Strongly
+// disagree. Responses assume ~1,440 answers per question.
+const HOVER_ROW = 3;
+const RESPONSES = 144;
+
+// ── Colour ───────────────────────────────────────────────────────────────────
+// The template takes Power BI's theme sentiment colours and shades every rank
+// below the top one 25% lighter. Index 0 is the extreme choice, at full colour.
+const NEG = ['#9E4A3C', '#B6776D', '#CFA59E'];
+const POS = ['#B8860B', '#CAA448', '#DCC385'];
+const NEU = '#8A7C68';
+// Top-ranked segments carry white labels; every other rank uses #5A4A38.
+const labelFill = (rank: number) => (rank === 0 ? '#FFFFFF' : '#5A4A38');
+// Legend order follows the bars: three disagree, neutral, then three agree
+// (the agree side reversed back to mild → strong).
+const LEGEND_FILL = [NEG[0], NEG[1], NEG[2], NEU, POS[2], POS[1], POS[0]];
+// Two rows: disagree + neutral above, agree below, so each agree swatch sits
+// under its disagree counterpart.
+const LEGEND_SLOT = [
+  [0, 0], [1, 0], [2, 0], [3, 0],
+  [0, 1], [1, 1], [2, 1],
+];
+
+// ── Geometry ─────────────────────────────────────────────────────────────────
+// One scale for both panels (S px per percentage point), so the neutral panel is
+// half the non-neutral width exactly as in the template: −100…+100 against 0…100.
+const S = 3;
+const GUTTER = 100; // category labels, right-aligned here
+const NN_X0 = 146; // −100 on the non-neutral axis; negative totals sit just left of it
+const NN_W = 200 * S;
+const ZERO = NN_X0 + 100 * S;
+const N_X0 = NN_X0 + NN_W + 60; // room for the positive totals
+const N_W = 100 * S;
+const VB_W = N_X0 + N_W + 40;
+
+const LEG_COL = 220;
+const LEG_Y = 14;
+const LEG_ROW = 22;
+const HEAD_RULE_Y = 54;
+const CLASS_Y = 84;
+const CLASS_RULE_Y = 94;
+const TOP = 110;
+const ROW_H = 44;
+const BAR_H = 26;
+const AXIS_Y = TOP + DATA.length * ROW_H;
+const VB_H = AXIS_Y + 26;
+// Segments under this stay unlabelled. The template's cut-off is 5%, but it draws
+// 4px per point; at 3px a 5% segment is 15px and its label runs into the next.
+const LABEL_MIN = 6;
+const R = 3;
+
+const rowY = (i: number) => TOP + i * ROW_H + (ROW_H - BAR_H) / 2;
+
+/** A bar segment with only the chosen outer ends rounded ("first and last bars"). */
+const seg = (x: number, y: number, w: number, h: number, roundL: boolean, roundR: boolean) => {
+  const rl = roundL ? Math.min(R, w / 2) : 0;
+  const rr = roundR ? Math.min(R, w / 2) : 0;
+  return [
+    `M${x + rl},${y}`,
+    `H${x + w - rr}`,
+    rr ? `Q${x + w},${y} ${x + w},${y + rr}` : '',
+    `V${y + h - rr}`,
+    rr ? `Q${x + w},${y + h} ${x + w - rr},${y + h}` : '',
+    `H${x + rl}`,
+    rl ? `Q${x},${y + h} ${x},${y + h - rl}` : '',
+    `V${y + rl}`,
+    rl ? `Q${x},${y} ${x + rl},${y}` : '',
+    'Z',
+  ].join(' ');
+};
+
+interface Segment { x: number; w: number; v: number; rank: number; fill: string; first: boolean; last: boolean }
+
+const ROWS = DATA.map((d, i) => {
+  // Negative runs left → right from the extreme choice to the zero line.
+  let x = ZERO - sum(d.neg) * S;
+  const neg: Segment[] = d.neg.map((v, k) => {
+    const s = { x, w: v * S, v, rank: k, fill: NEG[k], first: k === 0, last: false };
+    x += v * S;
+    return s;
+  });
+  // Positive runs left → right from the zero line out to the extreme choice.
+  x = ZERO;
+  const pos: Segment[] = [...d.pos].reverse().map((v, j) => {
+    const k = d.pos.length - 1 - j;
+    const s = { x, w: v * S, v, rank: k, fill: POS[k], first: false, last: k === 0 };
+    x += v * S;
+    return s;
+  });
+  const y = rowY(i);
+  return { y, cy: y + BAR_H / 2, negTotal: sum(d.neg), posTotal: sum(d.pos), neu: d.neu, neg, pos };
+});
+
+const NN_TICKS = [-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100];
+const N_TICKS = [0, 20, 40, 60, 80, 100];
+
+// ── Custom tooltip card ──────────────────────────────────────────────────────
+const hoverRow = ROWS[HOVER_ROW];
+const hover = hoverRow.neg[0];
+const CARD_W = 236;
+const CARD_H = 134;
+const CARD_X = hover.x + hover.w + 14;
+const CARD_Y = Math.max(TOP, Math.min(hoverRow.cy - CARD_H / 2, AXIS_Y - CARD_H));
+const TIP_VALUES = [`${hover.v}%`, String(RESPONSES), `${hoverRow.negTotal}%`, extras.t19TipQuestion];
+---
+
+<section class="t19" id={id} style={bandStyle(alt)}>
+  <div class="wrap">
+    <div class="header">
+      <p class="eyebrow" data-reveal>{number}</p>
+      <h2 data-reveal data-reveal-delay="60">
+        <Fragment set:html={title} />
+        <a class="anchor" href={`#${id}`} aria-label={`${anchorLabel} ${number}`}>#</a>
+      </h2>
+      <p class="sub" data-reveal data-reveal-delay="100" set:html={description} />
+    </div>
+
+    {/* --sent-w carries the viewBox width through to the CSS, so the SVG never
+        scales past 1:1 (see .sent-inner). */}
+    <div class="chart-card" data-reveal data-reveal-delay="160" style={`--sent-w:${VB_W}px`}>
+      <div class="chart-label" set:html={chartLabel} />
+
+      {/* Stagger is per bar group (three per row), so the rows sweep in from
+          the zero lines rather than 48 segments animating one by one. */}
+      <div class="sent-inner" data-anim-root data-stagger="45">
+        <svg viewBox={`0 0 ${VB_W} ${VB_H}`} class="sent-svg" role="img" aria-label={extras.t19Aria}>
+          {/* Header: legend + rule */}
+          {extras.t19Choices.map((choice, c) => {
+            const [col, row] = LEGEND_SLOT[c];
+            const lx = col * LEG_COL + 6;
+            const ly = LEG_Y + row * LEG_ROW;
+            return (
+              <g>
+                <circle cx={lx} cy={ly} r="5.5" fill={LEGEND_FILL[c]} />
+                <text x={lx + 13} y={ly + 4} font-size="12" fill="#41382C">{choice}</text>
+              </g>
+            );
+          })}
+          <line x1="0" y1={HEAD_RULE_Y} x2={VB_W} y2={HEAD_RULE_Y} stroke="rgba(43,33,24,0.18)" stroke-width="1" />
+
+          {/* Class titles over their divider rules */}
+          <text x={NN_X0 + NN_W / 4} y={CLASS_Y} class="class-title" text-anchor="middle">{negLabel}</text>
+          <text x={NN_X0 + (3 * NN_W) / 4} y={CLASS_Y} class="class-title" text-anchor="middle">{posLabel}</text>
+          <text x={N_X0 + N_W / 2} y={CLASS_Y} class="class-title" text-anchor="middle">{neuLabel}</text>
+          <line x1={NN_X0} y1={CLASS_RULE_Y} x2={ZERO - S} y2={CLASS_RULE_Y} stroke="#A67B45" stroke-width="1.4" />
+          <line x1={ZERO + S} y1={CLASS_RULE_Y} x2={NN_X0 + NN_W} y2={CLASS_RULE_Y} stroke="#A67B45" stroke-width="1.4" />
+          <line x1={N_X0} y1={CLASS_RULE_Y} x2={N_X0 + N_W} y2={CLASS_RULE_Y} stroke="#A67B45" stroke-width="1.4" />
+
+          {/* Grid and axes; zero is larger and bold on both */}
+          {NN_TICKS.map((v) => {
+            const x = ZERO + v * S;
+            return (
+              <g>
+                <line x1={x} y1={TOP - 6} x2={x} y2={AXIS_Y} stroke={v === 0 ? 'rgba(43,33,24,0.45)' : 'rgba(43,33,24,0.08)'} stroke-width={v === 0 ? 1.4 : 0.8} />
+                <text x={x} y={AXIS_Y + 18} text-anchor="middle" font-size={v === 0 ? 12 : 11} font-weight={v === 0 ? 700 : 400} fill="#8A7C68">{Math.abs(v)}</text>
+              </g>
+            );
+          })}
+          {N_TICKS.map((v) => {
+            const x = N_X0 + v * S;
+            return (
+              <g>
+                <line x1={x} y1={TOP - 6} x2={x} y2={AXIS_Y} stroke="rgba(43,33,24,0.08)" stroke-width="0.8" />
+                <text x={x} y={AXIS_Y + 18} text-anchor="middle" font-size={v === 0 ? 12 : 11} font-weight={v === 0 ? 700 : 400} fill="#8A7C68">{v}</text>
+              </g>
+            );
+          })}
+          <line x1={NN_X0} y1={AXIS_Y} x2={NN_X0 + NN_W} y2={AXIS_Y} stroke="rgba(43,33,24,0.3)" stroke-width="1" />
+          <line x1={N_X0} y1={AXIS_Y} x2={N_X0 + N_W} y2={AXIS_Y} stroke="rgba(43,33,24,0.3)" stroke-width="1" />
+
+          {/* Bars: each side grows out of its own zero line */}
+          {ROWS.map((r) => (
+            <g>
+              <g data-anim="grow-x" data-origin="right center">
+                {r.neg.map((s) => <path d={seg(s.x, r.y, s.w, BAR_H, s.first, false)} fill={s.fill} />)}
+              </g>
+              <g data-anim="grow-x">
+                {r.pos.map((s) => <path d={seg(s.x, r.y, s.w, BAR_H, false, s.last)} fill={s.fill} />)}
+              </g>
+              <path d={seg(N_X0, r.y, r.neu * S, BAR_H, true, true)} fill={NEU} data-anim="grow-x" />
+            </g>
+          ))}
+
+          {/* Category labels, class totals and segment labels, once the bars are in */}
+          <g data-anim="fade" data-delay="450">
+            {ROWS.map((r, i) => (
+              <g>
+                <text x={GUTTER} y={r.cy + 4.5} text-anchor="end" font-size="13" fill="#41382C">{extras.t19Cats[i]}</text>
+                <text x={NN_X0 - 7} y={r.cy + 5} text-anchor="end" class="class-pct">{r.negTotal}%</text>
+                <text x={NN_X0 + NN_W + 7} y={r.cy + 5} class="class-pct">{r.posTotal}%</text>
+                <text x={N_X0 + N_W + 7} y={r.cy + 5} class="class-pct">{r.neu}%</text>
+                {[...r.neg, ...r.pos].filter((s) => s.v >= LABEL_MIN).map((s) => (
+                  <text x={s.x + s.w / 2} y={r.cy + 4} text-anchor="middle" class="seg-label" fill={labelFill(s.rank)}>{s.v}%</text>
+                ))}
+                {r.neu >= LABEL_MIN && (
+                  <text x={N_X0 + (r.neu * S) / 2} y={r.cy + 4} text-anchor="middle" class="seg-label" fill="#FFFFFF">{r.neu}%</text>
+                )}
+              </g>
+            ))}
+          </g>
+
+          {/* Custom tooltip: hover outline, shadow, card */}
+          <g data-anim="fade" data-delay="900">
+            <path d={seg(hover.x, hoverRow.y, hover.w, BAR_H, true, false)} fill="none" stroke="#3D3A36" stroke-width="1.6" />
+            <rect x={CARD_X} y={CARD_Y + 2} width={CARD_W + 4} height={CARD_H + 4} rx="8" fill="#3D3A36" fill-opacity="0.06" />
+            <rect x={CARD_X} y={CARD_Y} width={CARD_W} height={CARD_H} rx="8" fill="#FFFDF8" stroke="rgba(166,123,69,0.45)" stroke-width="1" />
+            <text x={CARD_X + 14} y={CARD_Y + 23} class="tip-cat">{extras.t19Cats[HOVER_ROW]}</text>
+            <text x={CARD_X + 14} y={CARD_Y + 45} class="tip-choice">{extras.t19Choices[0]}</text>
+            <rect x={CARD_X + 14} y={CARD_Y + 56} width={CARD_W - 28} height="1" fill="rgba(166,123,69,0.35)" />
+            {extras.t19Tip.map((label, k) => (
+              <g>
+                <text x={CARD_X + 14} y={CARD_Y + 76 + k * 16} font-size="11.5" fill="#6B5D4B">{label}</text>
+                <text x={CARD_X + CARD_W - 14} y={CARD_Y + 76 + k * 16} text-anchor="end" font-size="11.5" font-weight="700" fill="#2B2118">{TIP_VALUES[k]}</text>
+              </g>
+            ))}
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="source-link" data-reveal>
+      <TemplateLinks {links} {jsonLabel} offsetTop={false} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .t19 {
+    padding: clamp(60px, 8vw, 120px) clamp(20px, 6vw, 80px);
+  }
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+  .eyebrow {
+    font: 600 12px/1 var(--font-sans);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 0 0 18px;
+  }
+  .header h2 {
+    font: 700 clamp(26px, 3.6vw, 40px)/1.12 var(--font-serif);
+    color: var(--text);
+    margin: 0 0 14px;
+  }
+  /* :global because the title arrives through set:html, which Astro's scoping
+     never reaches — same reason as TemplateSection. */
+  .header h2 :global(span.accent) {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .anchor {
+    margin-left: 0.3em;
+    font-family: var(--font-sans);
+    font-size: 0.42em;
+    font-weight: 600;
+    color: var(--amber);
+    text-decoration: none;
+    vertical-align: 0.35em;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-signature);
+  }
+  .header h2:hover .anchor,
+  .anchor:focus-visible {
+    opacity: 1;
+  }
+  .sub {
+    margin: 0;
+    max-width: 620px;
+    font-size: clamp(15px, 1.3vw, 18px);
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+  .chart-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: clamp(18px, 2.5vw, 30px);
+    box-shadow: var(--card-shadow);
+    overflow-x: auto;
+    /* A flex item defaults to min-width:auto, which would let the SVG's
+       min-width stretch the whole column and push the copy off-screen. */
+    min-width: 0;
+  }
+  .chart-label {
+    font: 600 11px/1 var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+  /* Capped at the viewBox's own width so the SVG never scales past 1:1. The
+     min-width keeps labels legible on phones; the card scrolls sideways instead. */
+  .sent-inner {
+    max-width: var(--sent-w);
+    margin: 0 auto;
+  }
+  .sent-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-width: 720px;
+    font-family: 'Inter', sans-serif;
+  }
+  .class-title {
+    font: italic 400 14px var(--font-serif);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    fill: #8A7C68;
+  }
+  .class-pct {
+    font: italic 400 15px var(--font-serif);
+    fill: #6B5D4B;
+  }
+  .seg-label {
+    font: 600 10.5px var(--font-sans);
+  }
+  .tip-cat {
+    font: 600 10px var(--font-sans);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    fill: #8A7C68;
+  }
+  .tip-choice {
+    font: italic 400 17px var(--font-serif);
+    fill: #2B2118;
+  }
+</style>

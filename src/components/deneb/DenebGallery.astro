@@ -18,10 +18,12 @@ const copy = denebCopy(lang);
 // templates are numbered and released; display order is a presentation choice.
 const ordered = [...TEMPLATES].reverse();
 
-// Banding starts on --bg so it meets IntroSection's --bg-alt cleanly, and with an
-// even number of templates it lands back on --bg-alt to meet ClosingSection's
-// gradient. Both seams stay correct as long as the count stays even — an odd
-// count would double up one band at whichever end.
+// Banding starts on --bg so it meets IntroSection's --bg-alt cleanly. The last
+// band then depends on parity: an even count ends on --bg-alt and runs straight
+// into ClosingSection's gradient (whose top edge is the same #FBF7EF); an odd
+// count ends on --bg and meets it as an ordinary band edge. Anchoring parity to
+// the bottom instead would double up --bg-alt against the intro, so the top seam
+// wins.
 const isAlt = (i: number) => i % 2 === 1;
 
 // Copy is resolved here rather than inside each template, so a template component

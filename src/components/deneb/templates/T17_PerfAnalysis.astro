@@ -213,7 +213,9 @@ const LEGEND = [
     color: var(--text);
     margin: 0 0 10px;
   }
-  .header h2 .accent {
+  /* :global because the title arrives through set:html, which Astro's scoping
+     never reaches — same reason as TemplateSection. */
+  .header h2 :global(span.accent) {
     font-style: italic;
     color: var(--gold);
   }
