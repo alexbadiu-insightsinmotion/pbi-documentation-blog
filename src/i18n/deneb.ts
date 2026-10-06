@@ -51,6 +51,17 @@ export interface DenebExtras {
   t18Slicers: { label: string; value: string }[];
   /** Long description for the calendar SVG, read by assistive tech. */
   t18Aria: string;
+  /** Class titles, in drawing order: negative, positive, neutral. */
+  t19Classes: string[];
+  /** The seven survey choices, strongly disagree → strongly agree. */
+  t19Choices: string[];
+  /** Survey categories, top to bottom. */
+  t19Cats: string[];
+  /** Custom tooltip row labels: share, responses, negative total, question. */
+  t19Tip: string[];
+  /** Value of the tooltip's Question row. */
+  t19TipQuestion: string;
+  t19Aria: string;
 }
 
 interface DenebCopy {
@@ -113,6 +124,21 @@ const en: DenebCopy = {
     ],
     t18Aria:
       'Calendar heat map: six months of daily values, faceted by quarter and month, with the highest days picked out in darker tones',
+    t19Classes: ['Negative', 'Positive', 'Neutral'],
+    t19Choices: [
+      'Strongly disagree',
+      'Moderately disagree',
+      'Mildly disagree',
+      'Neither agree nor disagree',
+      'Mildly agree',
+      'Moderately agree',
+      'Strongly agree',
+    ],
+    t19Cats: ['Brand', 'Model', 'Dealer', 'Location', 'Performance', 'Emissions'],
+    t19Tip: ['Share of responses', 'Responses', 'Negative total', 'Question'],
+    t19TipQuestion: 'Influence',
+    t19Aria:
+      'Sentiment analysis: diverging stacked bars for six survey categories, disagreement left of zero and agreement right, neutral answers in a separate panel, with a custom tooltip card open on one bar',
   },
   templates: {
     'space-saving-bar': {
@@ -223,6 +249,12 @@ const en: DenebCopy = {
       chartLabel: 'Daily volume &middot; by quarter &amp; month',
       jsonLabels: ['Multiple languages', 'Single language'],
     },
+    'sentiment-analysis': {
+      label: 'Sentiment analysis',
+      title: 'Agree or not, <span class="accent">at a glance</span>',
+      description: 'Survey answers as diverging stacked bars: disagreement runs left of zero, agreement right, and neutral answers get a panel of their own. The axis is fixed at ±100% so questions and surveys compare like for like, and each class total sits beside its bars. Colours come from the Power&nbsp;BI theme’s sentiment palette, every rank below the top one 25% lighter. Non-neutral bars open a custom tooltip card drawn in Vega-Lite itself; neutral bars keep the standard tooltip. Built on Deneb 2.0.0.',
+      chartLabel: 'Vehicle survey &middot; share of responses',
+    },
   },
 };
 
@@ -269,6 +301,23 @@ const fr: DenebCopy = {
     ],
     t18Aria:
       'Carte de chaleur calendaire : six mois de valeurs quotidiennes, facettées par trimestre et par mois, les journées les plus fortes ressortant en tons plus foncés',
+    t19Classes: ['Négatif', 'Positif', 'Neutre'],
+    t19Choices: [
+      'Fortement en désaccord',
+      'Modérément en désaccord',
+      'Légèrement en désaccord',
+      'Ni d’accord ni en désaccord',
+      'Légèrement d’accord',
+      'Modérément d’accord',
+      'Fortement d’accord',
+    ],
+    // "Concession" rather than "Concessionnaire": the longer word overruns the
+    // category gutter.
+    t19Cats: ['Marque', 'Modèle', 'Concession', 'Emplacement', 'Performance', 'Émissions'],
+    t19Tip: ['Part des réponses', 'Réponses', 'Total négatif', 'Question'],
+    t19TipQuestion: 'Influence',
+    t19Aria:
+      'Analyse de sentiment : barres empilées divergentes pour six catégories d’enquête, le désaccord à gauche de zéro et l’accord à droite, les réponses neutres dans un panneau séparé, avec une infobulle personnalisée ouverte sur une barre',
   },
   templates: {
     'space-saving-bar': {
@@ -376,6 +425,12 @@ const fr: DenebCopy = {
       description: 'Un double facettage, les trimestres en lignes et leurs mois en colonnes : chaque jour est une cellule arrondie sur une échelle de couleur continue, si bien que les quelques jours qui comptent émergent d’une année calme. Seuls les deux premiers trimestres sont tracés ici ; le template couvre les quatre. Langue, jour de début de semaine et métrique quotidienne sont pilotés par segment.',
       chartLabel: 'Volume quotidien &middot; par trimestre &amp; mois',
       jsonLabels: ['Plusieurs langues', 'Langue unique'],
+    },
+    'sentiment-analysis': {
+      label: 'Analyse de sentiment',
+      title: 'D’accord ou pas, <span class="accent">en un coup d’œil</span>',
+      description: 'Les réponses d’enquête en barres empilées divergentes : le désaccord s’étend à gauche de zéro, l’accord à droite, et les réponses neutres ont leur propre panneau. L’axe est fixé à ±100 % pour comparer questions et enquêtes à l’identique, et le total de chaque classe s’affiche à côté de ses barres. Les couleurs viennent de la palette de sentiment du thème Power&nbsp;BI, chaque rang sous le premier éclairci de 25 %. Les barres non neutres ouvrent une infobulle personnalisée dessinée dans Vega-Lite même ; les barres neutres gardent l’infobulle standard. Conçu pour Deneb 2.0.0.',
+      chartLabel: 'Enquête véhicules &middot; part des réponses',
     },
   },
 };

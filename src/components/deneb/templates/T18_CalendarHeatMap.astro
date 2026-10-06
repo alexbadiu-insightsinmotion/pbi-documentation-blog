@@ -219,7 +219,9 @@ const LEGEND_TICKS = ['0', '40', '80', '120', '160', '200+'];
     color: var(--text);
     margin: 0 0 14px;
   }
-  .header h2 .accent {
+  /* :global because the title arrives through set:html, which Astro's scoping
+     never reaches — same reason as TemplateSection. */
+  .header h2 :global(span.accent) {
     font-style: italic;
     color: var(--gold);
   }

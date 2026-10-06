@@ -94,7 +94,7 @@ the same either way). Three conventions are worth knowing before editing:
   appear as they do in the tooling. Only the prose around them is translated.
 - **The 7 PNG thumbnails have English text baked into the image** and cannot be
   translated without redrawing them. Their captions are translated; the artwork
-  is not. The 11 inline-SVG thumbnails are fully translated.
+  is not. The 12 inline-SVG thumbnails are fully translated.
 - **FR pages carry a one-line note** (`src/components/FrNote.astro`) saying the
   linked GitHub documents are in English, since those are not translated.
 
@@ -115,39 +115,45 @@ Each has an `/fr/` twin except the blog index (the home page carries it).
 
 ## Adding a Deneb template
 
-Two steps, and nothing else needs touching — the count, the display order, the
-alternating background banding, the eyebrow number, the anchor id and the
-navigator entry are all derived from the registry.
+Three steps, and nothing else needs touching — the count, the display order, the
+alternating background banding, the eyebrow number, the anchor id, the
+navigator entry and the outbound links are all derived from the registry.
 
 1. Add `src/components/deneb/templates/T<NN>_<Name>.astro`. Copy the closest
-   existing one: most templates wrap `TemplateSection.astro` (two-column, chart
-   on one side) and just accept and forward the four gallery props:
+   existing one, `Props` interface included: most templates wrap
+   `TemplateSection.astro` (two-column, chart on one side) and forward the
+   gallery props to it (`alt`, `chartFirst`, `id`, `number`, `title`,
+   `description`, `links`, `jsonLabel`, `anchorLabel`). A thumbnail that draws
+   text also takes `extras` and reads its strings from `DenebExtras`.
 
-   ```astro
-   interface Props { alt: boolean; chartFirst: boolean; id: string; number: string; }
-   const { alt, chartFirst, id, number } = Astro.props;
-   ```
-
-   Full-bleed single-column templates (T01, T17, T18) instead put
+   Full-bleed single-column templates (T01, T17, T18, T19) instead put
    `style={bandStyle(alt)}` on their own `<section id={id}>`. Either way, any
    card inside must use `background: var(--card-bg)` — that custom property is
    published by the section and is always the inverse of its band, which is what
    keeps the banding correct when the order changes.
 
-2. Append one line to `TEMPLATES` in `src/components/deneb/templates.ts`, in
-   ascending order:
+2. Append one entry to `TEMPLATES` in `src/components/deneb/templates.ts`, in
+   ascending order, keeping the keys in this order (the link audit below parses
+   them with a regex):
 
    ```ts
-   { num: '19', slug: 'my-template', Component: T19_MyTemplate },
+   {
+     num: '20',
+     slug: 'my-template',
+     Component: T20_MyTemplate,
+     doc: '220 - My Template (Deneb Template).md',
+     json: ['920.1 - deneb_template.my_template.v2.0.0.json'],
+   },
    ```
 
    `slug` is both the anchor (`/deneb/#my-template`) and the copy key, so keep it
-   stable once shipped.
+   stable once shipped. `doc` and `json` are literal upstream filenames in
+   `Components/Deneb/`; `node scripts/audit-repo-links.mjs` checks they exist.
 
 3. Add a matching entry under `templates` in **both** locales in
    `src/i18n/deneb.ts` — `label`, `title`, `description`, and `chartLabel` if the
    thumbnail has a caption. `label` is used twice (the eyebrow reads
-   `19 — My template`, the navigator reads `My template`), so there is one place
+   `20 — My template`, the navigator reads `My template`), so there is one place
    to keep in step. Forgetting a locale fails the build rather than falling back
    to English.
 

@@ -1,6 +1,6 @@
 // The single source of truth for the Deneb gallery.
 //
-// Every thumbnail is hand-authored (10 inline SVG recreations, 7 PNGs, 1 calendar
+// Every thumbnail is hand-authored (11 inline SVG recreations, 7 PNGs, 1 calendar
 // heat map), so the gallery can never be fully generated. What this registry does
 // remove is the per-release busywork around it: the template count, the display
 // order, the alternating background banding, the eyebrow numbering, the anchor id,
@@ -27,6 +27,7 @@ import T15_FinancialWaterfall from './templates/T15_FinancialWaterfall.astro';
 import T16_Sunburst from './templates/T16_Sunburst.astro';
 import T17_PerfAnalysis from './templates/T17_PerfAnalysis.astro';
 import T18_CalendarHeatMap from './templates/T18_CalendarHeatMap.astro';
+import T19_SentimentAnalysis from './templates/T19_SentimentAnalysis.astro';
 
 export interface TemplateEntry {
   /** Two-digit index. Drives the eyebrow and matches the 2NN doc number upstream. */
@@ -57,8 +58,9 @@ export interface TemplateEntry {
    * These are literals, not derived from `num`, because upstream naming is not
    * regular: 913.1 and 914.1 drop the `template.` segment every other file carries,
    * and the version suffix moves (v1.8.1 for 901-907, v1.8.2 for 908-916, v1.9.1
-   * for 917-918). More than one entry means the template ships user-facing variants,
-   * which then need a matching `jsonLabels` array in the locale copy.
+   * for 917-918, v2.0.0 for 919). More than one entry means the template ships
+   * user-facing variants, which then need a matching `jsonLabels` array in the
+   * locale copy.
    */
   json: string[];
 }
@@ -200,6 +202,13 @@ export const TEMPLATES: TemplateEntry[] = [
       '918.1 - deneb_template.calendar_heat_map_multiple_languages.v1.9.1.json',
       '918.2 - deneb_template.calendar_heat_map_single_language.v1.9.1.json',
     ],
+  },
+  {
+    num: '19',
+    slug: 'sentiment-analysis',
+    Component: T19_SentimentAnalysis,
+    doc: '219 - Sentiment Analysis (Deneb Template).md',
+    json: ['919.1 - deneb_template.sentiment_analysis.v2.0.0.json'],
   },
 ];
 
