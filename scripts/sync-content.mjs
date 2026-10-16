@@ -134,6 +134,23 @@ function extractCover(body) {
   return { cover: url, body: cleaned };
 }
 
+// Some posts reference their images relative to the repo (e.g. "Images/27/x.png").
+// On GitHub that resolves against the file; on this site it would resolve against
+// /blog/<slug>/ and 404, so pin relative image sources to the raw repo file.
+// Links are deliberately left alone — several posts carry hand-written link
+// targets ("<https://…>", "((https://…))") that a rewrite would only mangle.
+function resolveRelativeImages(body, file) {
+  const rewrite = (url) => {
+    if (/^([a-z][a-z0-9+.-]*:|[/#<(])/i.test(url)) return url;
+    const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(file), url));
+    const encoded = resolved.split('/').map(encodeURIComponent).join('/');
+    return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${encoded}`;
+  };
+  return body
+    .replace(/(<img\b[^>]*\ssrc=)(["'])([^"']+)\2/gi, (_, pre, q, url) => `${pre}${q}${rewrite(url)}${q}`)
+    .replace(/(!\[[^\]]*\]\()([^)\s]+)\)/g, (_, pre, url) => `${pre}${rewrite(url)})`);
+}
+
 function stripTableOfContents(body) {
   return body.replace(/^#{1,4}\s*Table of Contents\s*$[\s\S]*?(?=^#{1,3}\s)/im, '');
 }
@@ -199,11 +216,15 @@ async function run() {
       if (!entry.tag) throw new Error('manifest entry is missing required "tag"');
       if (!entry.author) throw new Error('manifest entry is missing required "author"');
 
-      const raw = await fetchRawMarkdown(entry.file, token);
+      const raw = resolveRelativeImages(await fetchRawMarkdown(entry.file, token), entry.file);
       const title = entry.title ?? titleFromFilename(entry.file);
       const slug = entry.slug ?? slugify(title);
 
-      const { cover, body: withoutCover } = extractCover(raw);
+      // A manifest cover (e.g. a thumbnail under public/assets/covers/) leaves the
+      // body's first image in place — it is content, not a stand-in cover.
+      const { cover, body: withoutCover } = entry.cover
+        ? { cover: entry.cover, body: raw }
+        : extractCover(raw);
       const body = collapseBlankLines(stripLeadingIssueTag(stripTableOfContents(withoutCover)));
 
       const date = entry.date ?? (await getFirstCommitDate(entry.file, token)) ?? new Date().toISOString().slice(0, 10);

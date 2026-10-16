@@ -30,9 +30,18 @@ they're editorial calls that can't be derived from the content), e.g.
 
 To unpublish a post: delete its entry.
 
-Optional per-entry overrides: `slug`, `title`, `date`, `excerpt`. If omitted, the
+Optional per-entry overrides: `slug`, `title`, `date`, `excerpt`, `cover`. If omitted, the
 sync script derives the title from the filename, slugifies it for the URL, and
 looks up the file's first commit date in `PBI-Documentation` for the publish date.
+
+`cover` points at a thumbnail committed to this repo under `public/assets/covers/`
+(e.g. `"/assets/covers/<slug>.jpg"` — resize to ~1600px wide first). With it set,
+the post's first body image stays in the article instead of being lifted out as
+the cover. Without it, the first image in the post becomes the cover.
+
+Images referenced relative to the source repo (`Images/27/x.png`) are rewritten
+to their `raw.githubusercontent.com` URL at sync time, so posts can use either
+relative paths or GitHub attachment URLs.
 
 **Publishing a new post also means adding its French translation** — see
 "Bilingual content" below. This isn't automated by the sync script (no LLM is

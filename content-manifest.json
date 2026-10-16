@@ -24,5 +24,12 @@
   { "file": "23 - Documenting Bookmarks (part II) - Why External Documentation Fails.md", "tag": "PBIR", "author": "Alex Badiu" },
   { "file": "24 - Documenting Translytical Task Flow binding with PBIR.md", "tag": "PBIR", "author": "Alex Badiu" },
   { "file": "25 - Documenting Bookmarks (Part III) - PBIR Annotations + Claude Skills (1).md", "tag": "PBIR", "author": "Alex Badiu" },
-  { "file": "26 - Accessibility in PBIP with Tab Order and Alt Text.md", "tag": "accessibility", "author": "Alex Badiu" }
+  { "file": "26 - Accessibility in PBIP with Tab Order and Alt Text.md", "tag": "accessibility", "author": "Alex Badiu" },
+  {
+    "file": "27 - Self-updating documentation with an agentic pipeline and Rayfin.md",
+    "tag": "rayfin",
+    "author": "Alex Badiu",
+    "cover": "/assets/covers/self-updating-documentation-with-an-agentic-pipeline-and-rayfin.jpg",
+    "excerpt": "Your documentation is out of date the moment you save it. What if it rebuilt itself on every merge, standardized its own quality, and published straight into a living Rayfin app?"
+  }
 ]
